@@ -1,0 +1,130 @@
+:root {
+  --ry-sidebar: #304156;
+  --ry-sidebar-dark: #1f2d3d;
+  --ry-menu-hover: #263445;
+  --ry-primary: #409eff;
+  --ry-header-h: 50px;
+  --ry-tags-h: 34px;
+}
+
+* { box-sizing: border-box; }
+html, body, #app { height: 100%; margin: 0; }
+body {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: #303133;
+  background: #f0f2f5;
+}
+
+.app-wrapper { display: flex; height: 100%; }
+.sidebar {
+  width: 210px;
+  background: var(--ry-sidebar);
+  color: #bfcbd9;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.logo {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: var(--ry-sidebar-dark);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  gap: 8px;
+}
+.logo span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.main-wrap { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.navbar {
+  height: var(--ry-header-h);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  z-index: 9;
+}
+.tags-view {
+  height: var(--ry-tags-h);
+  background: #fff;
+  border-bottom: 1px solid #d8dce5;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 6px;
+  overflow: auto;
+}
+.tag-item {
+  height: 26px;
+  line-height: 26px;
+  padding: 0 10px;
+  font-size: 12px;
+  border: 1px solid #d8dce5;
+  color: #495060;
+  background: #fff;
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tag-item.active {
+  background: var(--ry-primary);
+  color: #fff;
+  border-color: var(--ry-primary);
+}
+.app-main {
+  flex: 1;
+  padding: 16px;
+  overflow: auto;
+}
+.app-container {
+  background: #fff;
+  padding: 16px 20px 20px;
+  min-height: calc(100% - 4px);
+}
+.page-title { font-size: 16px; font-weight: 600; margin: 0 0 16px; }
+
+.el-menu { border-right: none !important; }
+.el-aside { overflow: auto; }
+
+.fee-banner {
+  background: #f4f8ff;
+  border: 1px solid #d6e7ff;
+  border-radius: 4px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.fee-banner .num { font-size: 20px; font-weight: 700; color: #303133; }
+.fee-banner .unit { font-size: 12px; color: #909399; margin-left: 4px; }
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  border-top: 1px solid #ebeef5;
+  padding: 12px 0 0;
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  z-index: 5;
+}
+.todo-card {
+  cursor: pointer;
+  min-height: 108px;
+}
+.todo-card .count { font-size: 28px; font-weight: 700; line-height: 1.2; }
+.wb-create {
+  height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+}

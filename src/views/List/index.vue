@@ -28,7 +28,7 @@
         </el-form-item>
         <el-form-item label="办件状态">
           <el-select v-model="q.status" clearable style="width: 120px">
-            <el-option v-for="(lab, k) in STATUS_LABEL" :key="k" :label="lab" :value="k" />
+            <el-option v-for="(lab, k) in CASE_STATUS_LABEL" :key="k" :label="lab" :value="k" />
           </el-select>
         </el-form-item>
         <el-form-item label="金额区间">
@@ -62,7 +62,7 @@
         </el-table-column>
         <el-table-column label="当前状态" width="110">
           <template #default="{ row }">
-            <el-tag :type="STATUS_TAG[row.status] || 'info'" size="small">{{ STATUS_LABEL[row.status] }}</el-tag>
+            <el-tag :type="STATUS_TAG[row.status] || 'info'" size="small">{{ CASE_STATUS_LABEL[row.status] }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="开票时间" width="110">
@@ -91,7 +91,7 @@ import { computed, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useCaseStore } from '@/store/cases'
-import { BIZ_TYPES, STATUS_LABEL, STATUS_TAG } from '@/utils/constants'
+import { BIZ_TYPES, CASE_STATUS_LABEL, STATUS_TAG } from '@/utils/constants'
 import { formatDate, formatMoney, landUseText } from '@/utils/calc'
 
 const router = useRouter()

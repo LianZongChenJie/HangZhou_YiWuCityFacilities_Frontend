@@ -516,6 +516,7 @@ export const STATUS = {
   archived: 'archived'
 }
 
+/** 审批流动作类型 → 中文标签（仅审批流使用） */
 export const STATUS_LABEL = {
   SUBMIT: '提交',
   APPROVE: '审批通过',
@@ -529,8 +530,18 @@ export const STATUS_LABEL = {
   ARCHIVE: '已归档',
 }
 
-export const FLOW_NODE = {
+/** 办件业务状态 → 中文标签（列表/统计/待办等业务页面使用） */
+export const CASE_STATUS_LABEL = {
+  draft: '待提交',
+  review: '待审核',
+  issue: '待签发',
+  pay: '待缴款',
+  close: '待办结',
+  archived: '已归档',
+  returned: '退回待修改'
+}
 
+export const FLOW_NODE = {
   RECEPTION: '受理',
   REVIEW: '审核',
   ISSUE: '签发',

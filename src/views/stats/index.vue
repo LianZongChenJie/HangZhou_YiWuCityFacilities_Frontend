@@ -33,7 +33,7 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="q.status" clearable style="width: 120px">
-            <el-option v-for="(lab, k) in STATUS_LABEL" :key="k" :label="lab" :value="k" />
+            <el-option v-for="(lab, k) in CASE_STATUS_LABEL" :key="k" :label="lab" :value="k" />
           </el-select>
         </el-form-item>
         <el-form-item class="search-actions">
@@ -92,7 +92,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { STATUS_LABEL } from '@/utils/constants'
+import { CASE_STATUS_LABEL } from '@/utils/constants'
 import { formatMoney, landUseText } from '@/utils/calc'
 import download from '@/utils/download'
 import { getList, getSummary, exportList } from './api'

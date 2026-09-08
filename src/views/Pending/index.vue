@@ -40,7 +40,7 @@
           </el-form-item>
           <el-form-item label="办件状态">
             <el-select v-model="query.status" clearable placeholder="全部" style="width: 130px">
-              <el-option v-for="(lab, k) in STATUS_LABEL" :key="k" :label="lab" :value="k" />
+              <el-option v-for="(lab, k) in CASE_STATUS_LABEL" :key="k" :label="lab" :value="k" />
             </el-select>
           </el-form-item>
           <el-form-item label="金额区间">
@@ -172,7 +172,7 @@
 import { computed, reactive, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { STATUS_TAG, STATUS_LABEL, BIZ_TYPES } from '@/utils/constants'
+import { STATUS_TAG, CASE_STATUS_LABEL, BIZ_TYPES } from '@/utils/constants'
 import { formatMoney, todayText } from '@/utils/calc'
 import { checkPermi } from '@/utils/permission'
 import {
@@ -333,9 +333,9 @@ function buildParams() {
 const filtered = computed(() => rows.value)
 
 function statusText(row) {
-  if (row.rejected && row.status === 'draft') return '退回待修改'
+  if (row.status === 'returned') return '退回待修改'
   if (row.isFourCerts && !row.permitNo) return '待证号补录'
-  return STATUS_LABEL[row.status] || row.status
+  return CASE_STATUS_LABEL[row.status] || row.status
 }
 
 /** 创建时间格式化为 YYYY-MM-DD HH:mm */

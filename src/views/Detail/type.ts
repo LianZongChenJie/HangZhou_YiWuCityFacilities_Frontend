@@ -56,3 +56,71 @@ export interface ApprovalRecordRespVO {
     opinion?: string;
     [property: string]: any;
 }
+
+/**
+ * 审批通过请求参数
+ */
+export interface ApprovalProcessReqVO {
+    /**
+     * 办件ID
+     */
+    applicationId: number;
+    /**
+     * 审批意见（退回修改时必填）
+     */
+    opinion?: string;
+    /**
+     * 确认到账金额/实际缴款金额（签发岗确认到账时使用）
+     */
+    paidAmount?: number;
+    /**
+     * 缴款通知书编号（签发岗开具时填写）
+     */
+    paymentNoticeNo?: string;
+    /**
+     * 补录的工程规划许可证号（四证齐发补录时填写）
+     */
+    permitNo?: string;
+    /**
+     * 缴费表领取人签字（办结时填写）
+     */
+    receiptSigner?: string;
+    /**
+     * 签发日期（签发时填写）
+     */
+    issueDate?: string;
+    /**
+     * 财务确认到账时间（确认到账时填写）
+     */
+    paymentReceivedDate?: string;
+}
+
+/**
+ * 退回修改请求参数
+ */
+export interface ApprovalRejectReqVO {
+    /**
+     * 办件ID
+     */
+    applicationId: number;
+    /**
+     * 审批意见（退回修改时必填）
+     */
+    opinion?: string;
+    /**
+     * 确认到账金额/实际缴款金额（签发岗确认到账时使用）
+     */
+    paidAmount?: number;
+    /**
+     * 缴款通知书编号（签发岗开具时填写）
+     */
+    paymentNoticeNo?: string;
+    /**
+     * 补录的工程规划许可证号（四证齐发补录时填写）
+     */
+    permitNo?: string;
+    /**
+     * 缴费表领取人签字（办结时填写）
+     */
+    receiptSigner?: string;
+}

@@ -1,5 +1,5 @@
 import request from '@/config/axios'
-import type { Request, PageResultReportApplicationVO } from './type'
+import type { Request, PageResultReportApplicationVO, ReportSummaryVO } from './type'
 
 enum Api {
   /** 列表 */
@@ -11,13 +11,12 @@ enum Api {
 }
 
 /** 报表分页列表 */
-export const getList = (params: Request) =>
-  request.post<PageResultReportApplicationVO>({ url: Api.list, params })
+export const getList = (data: Request) =>
+  request.post<PageResultReportApplicationVO>({ url: Api.list, data })
 
 /** 统计汇总数据 */
-export const getSummary = (params: Request) =>
-  request.post({ url: Api.summary, params })
+export const getSummary = (data: Request) =>
+  request.post<ReportSummaryVO>({ url: Api.summary, data })
 
 /** 导出 Excel */
-export const exportList = (params: Request) =>
-  request.download({ url: Api.export, params })
+export const exportList = (data: Request) => request.post({ url: Api.export, data })

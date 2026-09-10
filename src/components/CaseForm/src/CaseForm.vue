@@ -14,10 +14,10 @@
         《义乌市城市基础设施配套费征收缴费表》（一式两份，盖章）
       </el-checkbox>
       <el-checkbox v-model="form.materials.permitCopy" :disabled="readonly || form.isFourCerts">
-        《建设工程规划许可证》复印件{{ form.isFourCerts ? '（四证齐发可空）' : '' }}
+        《建设工程规划许可证》复印件
       </el-checkbox>
       <el-checkbox v-model="form.materials.civilAirForm">
-        《人防工程易地建设核实核定表》复印件{{ Number(form.civilAirArea) > 0 ? '（人防面积>0必勾）' : '' }}
+        《人防工程易地建设核实核定表》复印件
       </el-checkbox>
     </el-form-item>
 
@@ -46,7 +46,12 @@
     <el-row v-if="form.hasReduction" :gutter="16">
       <el-col :span="12">
         <el-form-item label="免征金额">
-          <el-input-number v-model="form.reductionAmount" :min="0" :precision="2" style="width: 100%" />
+          <el-input-number
+            v-model="form.reductionAmount"
+            :min="0"
+            :precision="2"
+            style="width: 100%"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -63,12 +68,12 @@
     </el-form-item>
     <el-row :gutter="16">
       <el-col :span="12">
-        <el-form-item label="地块信息">
+        <el-form-item label="地块信息" prop="plotInfo">
           <el-input v-model="form.plotInfo" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item label="资金来源">
+        <el-form-item label="资金来源" prop="fundSource">
           <el-select v-model="form.fundSource" style="width: 100%">
             <el-option v-for="i in FUND_SOURCES" :key="i" :label="i" :value="i" />
           </el-select>
@@ -78,7 +83,7 @@
     <el-form-item v-if="form.fundSource === '其他'" label="资金来源说明">
       <el-input v-model="form.fundSourceRemark" />
     </el-form-item>
-    <el-form-item label="土地用途">
+    <el-form-item label="土地用途" prop="landUses">
       <el-checkbox-group v-model="form.landUses">
         <el-checkbox v-for="i in LAND_USES" :key="i" :label="i" :value="i">{{ i }}</el-checkbox>
       </el-checkbox-group>
@@ -110,16 +115,15 @@
     <!-- 规划许可与面积 -->
     <el-divider content-position="left">规划许可与面积</el-divider>
     <el-form-item label="工规证号" :required="!form.isFourCerts">
-      <el-input v-model="form.permitNo" :placeholder="form.isFourCerts ? '四证齐发可空，后期补录' : '必填'" />
+      <el-input
+        v-model="form.permitNo"
+        :disabled="form.isFourCerts"
+        :placeholder="form.isFourCerts ? '四证齐发，后期补录' : '必填'"
+      />
     </el-form-item>
 
     <!-- 拆复建：原项目工规证号 -->
-    <el-form-item
-      v-if="isRebuild"
-      label="原项目工规证号"
-      required
-      prop="relatedPermitNo"
-    >
+    <el-form-item v-if="isRebuild" label="原项目工规证号" required prop="relatedPermitNo">
       <el-select
         v-model="form.relatedPermitNo"
         filterable
@@ -142,28 +146,48 @@
     <el-row :gutter="16">
       <el-col :span="6">
         <el-form-item label="地上建筑面积">
-          <el-input v-model="form.aboveArea" placeholder="请输入" @input="(v) => onAreaInput('aboveArea', v)" @blur="onAreaBlur('aboveArea')">
+          <el-input
+            v-model="form.aboveArea"
+            placeholder="请输入"
+            @input="(v) => onAreaInput('aboveArea', v)"
+            @blur="onAreaBlur('aboveArea')"
+          >
             <template #suffix>㎡</template>
           </el-input>
         </el-form-item>
       </el-col>
       <el-col :span="6">
         <el-form-item label="地下建筑面积">
-          <el-input v-model="form.underArea" placeholder="请输入" @input="(v) => onAreaInput('underArea', v)" @blur="onAreaBlur('underArea')">
+          <el-input
+            v-model="form.underArea"
+            placeholder="请输入"
+            @input="(v) => onAreaInput('underArea', v)"
+            @blur="onAreaBlur('underArea')"
+          >
             <template #suffix>㎡</template>
           </el-input>
         </el-form-item>
       </el-col>
       <el-col :span="6">
         <el-form-item label="地上住宅面积">
-          <el-input v-model="form.aboveResidentialArea" placeholder="请输入" @input="(v) => onAreaInput('aboveResidentialArea', v)" @blur="onAreaBlur('aboveResidentialArea')">
+          <el-input
+            v-model="form.aboveResidentialArea"
+            placeholder="请输入"
+            @input="(v) => onAreaInput('aboveResidentialArea', v)"
+            @blur="onAreaBlur('aboveResidentialArea')"
+          >
             <template #suffix>㎡</template>
           </el-input>
         </el-form-item>
       </el-col>
       <el-col :span="6">
         <el-form-item label="人防面积">
-          <el-input v-model="form.civilAirArea" placeholder="请输入" @input="(v) => onAreaInput('civilAirArea', v)" @blur="onAreaBlur('civilAirArea')">
+          <el-input
+            v-model="form.civilAirArea"
+            placeholder="请输入"
+            @input="(v) => onAreaInput('civilAirArea', v)"
+            @blur="onAreaBlur('civilAirArea')"
+          >
             <template #suffix>㎡</template>
           </el-input>
         </el-form-item>
@@ -202,7 +226,8 @@
         </el-col>
       </el-row>
       <div class="fee-hint">
-        住宅 30 元/㎡，非住宅 80 元/㎡，人防不计征。地下住宅面积 {{ form.underResidentialArea }} ㎡。
+        住宅 30 元/㎡，非住宅 80 元/㎡，人防不计征。地下住宅面积
+        {{ form.underResidentialArea }} ㎡。
       </div>
     </div>
 
@@ -232,12 +257,15 @@
         <el-col :span="6">
           <div class="fee-item">
             <div class="fee-label">应收总额</div>
-            <div class="num">{{ formatMoney(currentAutoReceivable) }}<span class="unit">元</span></div>
+            <div class="num"
+              >{{ formatMoney(currentAutoReceivable) }}<span class="unit">元</span></div
+            >
           </div>
         </el-col>
       </el-row>
       <div class="fee-hint">
-        住宅 30 元/㎡，非住宅 80 元/㎡，人防不计征。地下住宅面积 {{ form.underResidentialArea }} ㎡。
+        住宅 30 元/㎡，非住宅 80 元/㎡，人防不计征。地下住宅面积
+        {{ form.underResidentialArea }} ㎡。
       </div>
 
       <template v-if="form.relatedPermitNo">
@@ -249,25 +277,33 @@
           <el-col :span="6">
             <div class="fee-item archived">
               <div class="fee-label">住宅面积</div>
-              <div class="num">{{ form.archivedResidentialArea || 0 }}<span class="unit">㎡</span></div>
+              <div class="num"
+                >{{ form.archivedResidentialArea || 0 }}<span class="unit">㎡</span></div
+              >
             </div>
           </el-col>
           <el-col :span="6">
             <div class="fee-item archived">
               <div class="fee-label">非住宅面积</div>
-              <div class="num">{{ form.archivedNonResidentialArea || 0 }}<span class="unit">㎡</span></div>
+              <div class="num"
+                >{{ form.archivedNonResidentialArea || 0 }}<span class="unit">㎡</span></div
+              >
             </div>
           </el-col>
           <el-col :span="6">
             <div class="fee-item archived">
               <div class="fee-label">人防面积</div>
-              <div class="num">{{ form.archivedCivilAirArea || 0 }}<span class="unit">㎡</span></div>
+              <div class="num"
+                >{{ form.archivedCivilAirArea || 0 }}<span class="unit">㎡</span></div
+              >
             </div>
           </el-col>
           <el-col :span="6">
             <div class="fee-item archived">
               <div class="fee-label">应收总额</div>
-              <div class="num">{{ formatMoney(form.archivedReceivable) }}<span class="unit">元</span></div>
+              <div class="num"
+                >{{ formatMoney(form.archivedReceivable) }}<span class="unit">元</span></div
+              >
             </div>
           </el-col>
         </el-row>
@@ -276,34 +312,36 @@
         <div class="rebuild-actual-row">
           <div class="fee-item highlight">
             <div class="fee-label">实际应收金额</div>
-            <div class="num">{{ formatMoney(form.actualReceivable) }}<span class="unit">元</span></div>
+            <div class="num"
+              >{{ formatMoney(form.actualReceivable) }}<span class="unit">元</span></div
+            >
           </div>
           <div class="fee-hint">
-            实际应收金额 = max(当前应收总额 - 原有项目应收总额, 0)。若当前应收小于原有项目，则实际应收为 0；若大于，则收取差额。
+            实际应收金额 = max(当前应收总额 - 原有项目应收总额,
+            0)。若当前应收小于原有项目，则实际应收为 0；若大于，则收取差额。
           </div>
         </div>
       </template>
     </div>
-    
+
     <!-- 意见 -->
     <el-divider content-position="left">意见</el-divider>
     <el-form-item label="受理意见">
-      <el-input v-model="form.acceptOpinion" type="textarea" :rows="2" :disabled="opinionDisabled.accept" />
-    </el-form-item>
-    <el-form-item v-if="opinionVisible.review" label="审核意见">
-      <el-input v-model="form.reviewOpinion" type="textarea" :rows="2" :disabled="opinionDisabled.review" />
-    </el-form-item>
-    <el-form-item v-if="opinionVisible.issue" label="签发意见">
-      <el-input v-model="form.issueOpinion" type="textarea" :rows="2" :disabled="opinionDisabled.issue" />
+      <el-input
+        v-model="form.acceptOpinion"
+        type="textarea"
+        :rows="2"
+        :disabled="opinionDisabled"
+      />
     </el-form-item>
   </el-form>
 
   <!-- 额外内容插槽：用于在意见模块下方、操作按钮上方插入内容（如审批记录、关联单据等） -->
-  <slot name="extra" />
+  <slot name="extra"></slot>
 
   <!-- 操作按钮：放在 el-form 外部，避免被 form 的 disabled 影响 -->
   <div class="form-actions">
-    <slot name="actions" />
+    <slot name="actions"></slot>
   </div>
 </template>
 
@@ -335,45 +373,12 @@ const currentAutoReceivable = computed(() => calcFee(form).autoReceivable)
 /** 归一化状态 key（兼容大小写） */
 const statusKey = computed(() => (form.status || props.status || '').toUpperCase())
 
-/** 意见模块可见性：根据审批状态决定显示哪些意见 */
-const opinionVisible = computed(() => {
-  const s = statusKey.value
-  return {
-    // 受理意见：所有状态都可见
-    accept: true,
-    // 审核意见：待审核及之后的状态都可见
-    review: ['REVIEW', 'ISSUE', 'ISSUE1', 'ISSUE2', 'PAY', 'CLOSE', 'ARCHIVED', 'SECONDREVIEW'].includes(s),
-    // 签发意见：待签发及之后的状态可见
-    issue: ['ISSUE', 'ISSUE1', 'ISSUE2', 'PAY', 'CLOSE', 'ARCHIVED', 'SECONDREVIEW'].includes(s)
-  }
-})
-
-/** 意见模块可编辑性：根据审批状态决定哪些意见可修改 */
+/** 受理意见是否禁用：草稿/退回状态时可编辑 */
 const opinionDisabled = computed(() => {
   const s = statusKey.value
-  // 草稿/退回：受理意见可编辑，审核/签发不可见（不存在）
-  // 待审核：受理不可改，审核可改
-  // 待签发及之后：受理、审核都不可改，签发在待签发时可改
   const isDraftOrReturned = s === 'DRAFT' || s === 'RETURNED'
-  const isReview = s === 'REVIEW'
-  const isIssue = ['ISSUE', 'ISSUE1', 'ISSUE2'].includes(s)
-
-  // 如果整个表单是只读态（readonly），意见也跟着不可编辑
-  if (props.readonly) {
-    // 但需要根据状态允许对应意见可编辑：草稿受理意见、审核审核意见、签发签发意见
-    return {
-      accept: !isDraftOrReturned,
-      review: !isReview,
-      issue: !isIssue
-    }
-  }
-
-  // 非只读态（新建/修改页）：所有可见的意见都可编辑
-  return {
-    accept: false,
-    review: !opinionVisible.value.review, // 不可见时设为 disabled 避免误操作
-    issue: !opinionVisible.value.issue
-  }
+  // 只读态时，非草稿/退回状态下受理意见不可编辑
+  return props.readonly ? !isDraftOrReturned : false
 })
 
 /** 表单校验规则 */
@@ -382,6 +387,9 @@ const formRules = {
   projectSubtype: [{ required: true, message: '请选择项目细分', trigger: 'change' }],
   projectName: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
   builderName: [{ required: true, message: '请输入建设单位', trigger: 'blur' }],
+  plotInfo: [{ required: true, message: '请输入地块信息', trigger: 'blur' }],
+  fundSource: [{ required: true, message: '请选择资金来源', trigger: 'change' }],
+  landUses: [{ required: true, message: '请选择土地用途', trigger: 'change' }],
   relatedPermitNo: [{ required: true, message: '请选择原项目工规证号', trigger: 'change' }]
 }
 
@@ -403,6 +411,18 @@ async function loadArchivedList() {
       archivedList.value = res.data
     } else {
       archivedList.value = []
+    }
+    // 列表加载完成后，如果已有 relatedPermitNo，自动匹配并填充原有项目信息
+    if (form.relatedPermitNo && form.projectSubtype === '拆复建') {
+      const item = archivedList.value.find((i) => i.permitNo === form.relatedPermitNo)
+      if (item) {
+        form.relatedProjectName = item.projectName || ''
+        form.archivedResidentialArea = Number(item.residentialArea) || 0
+        form.archivedNonResidentialArea = Number(item.nonResidentialArea) || 0
+        form.archivedCivilAirArea = Number(item.civilAirArea) || 0
+        form.archivedReceivable = Number(item.receivable) || 0
+        applyCalc(form)
+      }
     }
   } catch (e) {
     archivedList.value = []
@@ -495,6 +515,16 @@ watch(
   }
 )
 
+/** 业务类型联动：非初次时清空项目细分 */
+watch(
+  () => form.bizType,
+  (val) => {
+    if (val && val !== '初次') {
+      form.projectSubtype = ''
+    }
+  }
+)
+
 function onManualAmount() {
   const auto = calcFee(form).autoReceivable
   form.amountManual = Number(form.receivable) !== auto
@@ -542,7 +572,7 @@ async function validate(submit) {
   if (!form.isFourCerts && !form.materials.permitCopy)
     return Promise.reject(new Error('请勾选已收取工规证复印件'))
   if ((Number(form.civilAirArea) || 0) > 0 && !form.materials.civilAirForm) {
-    return Promise.reject(new Error('人防面积大于 0，请勾选人防核定表'))
+    return Promise.reject(new Error('人防面积大于 0，请勾选《人防工程易地建设核实核定表》'))
   }
   if (!form.isFourCerts && !form.permitNo)
     return Promise.reject(new Error('请填写工程规划许可证号'))

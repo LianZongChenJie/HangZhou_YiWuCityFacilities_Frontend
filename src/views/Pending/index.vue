@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-
     <div class="tabs-card">
       <el-tabs v-model="tab" @tab-change="onTab">
         <el-tab-pane
@@ -13,45 +12,87 @@
 
       <!-- 所有 tab 共用的筛选条件 -->
       <div class="search-bar">
-        <el-form :inline="true" :model="query">
-          <el-form-item label="工规证号">
-            <el-input v-model="query.permitNo" placeholder="精准查询" clearable style="width: 200px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="建设单位名称">
-            <el-input v-model="query.builderName" placeholder="请输入" clearable style="width: 180px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="项目名称">
-            <el-input v-model="query.projectName" placeholder="请输入" clearable style="width: 180px" @keyup.enter="handleQuery" />
-          </el-form-item>
-          <el-form-item label="办件日期">
-            <el-date-picker
-              v-model="query.dateRange"
-              type="daterange"
-              value-format="YYYY-MM-DD"
-              start-placeholder="起"
-              end-placeholder="止"
-              style="width: 240px"
-            />
-          </el-form-item>
-          <el-form-item label="业务类型">
-            <el-select v-model="query.bizType" clearable placeholder="全部" style="width: 130px">
-              <el-option v-for="i in BIZ_TYPES" :key="i" :label="i" :value="i" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="办件状态">
-            <el-select v-model="query.status" clearable placeholder="全部" style="width: 130px">
-              <el-option v-for="(lab, k) in CASE_STATUS_LABEL" :key="k" :label="lab" :value="k" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="金额区间">
-            <el-input v-model="query.minAmt" style="width: 90px" placeholder="最小" />
-            <span style="margin: 0 6px">-</span>
-            <el-input v-model="query.maxAmt" style="width: 90px" placeholder="最大" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleQuery">筛选</el-button>
-            <el-button @click="resetQuery">重置</el-button>
-          </el-form-item>
+        <el-form :model="query" label-width="110px">
+          <el-row :gutter="16">
+            <el-col :span="8">
+              <el-form-item label="工规证号">
+                <el-input
+                  v-model="query.permitNo"
+                  placeholder="精准查询"
+                  clearable
+                  @keyup.enter="handleQuery"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="建设单位名称">
+                <el-input
+                  v-model="query.builderName"
+                  placeholder="请输入"
+                  clearable
+                  @keyup.enter="handleQuery"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="项目名称">
+                <el-input
+                  v-model="query.projectName"
+                  placeholder="请输入"
+                  clearable
+                  @keyup.enter="handleQuery"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="16">
+            <el-col :span="8">
+              <el-form-item label="办件日期">
+                <el-date-picker
+                  v-model="query.dateRange"
+                  type="daterange"
+                  value-format="YYYY-MM-DD"
+                  start-placeholder="起"
+                  end-placeholder="止"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="业务类型">
+                <el-select v-model="query.bizType" clearable placeholder="全部" style="width: 100%">
+                  <el-option v-for="i in BIZ_TYPES" :key="i" :label="i" :value="i" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="办件状态">
+                <el-select v-model="query.status" clearable placeholder="全部" style="width: 100%">
+                  <el-option
+                    v-for="(lab, k) in CASE_STATUS_LABEL"
+                    :key="k"
+                    :label="lab"
+                    :value="k"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="16">
+            <el-col :span="8">
+              <el-form-item label="金额区间">
+                <div class="amt-range">
+                  <el-input v-model="query.minAmt" placeholder="最小" />
+                  <span class="amt-separator">-</span>
+                  <el-input v-model="query.maxAmt" placeholder="最大" />
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-col :span="16" offset="8" style="text-align: right">
+              <el-button @click="resetQuery">重置</el-button>
+              <el-button type="primary" @click="handleQuery">筛选</el-button>
+            </el-col>
+          </el-row>
         </el-form>
       </div>
 
@@ -59,15 +100,27 @@
         <el-table-column prop="permitNo" label="工规证号" min-width="170">
           <template #default="{ row }">{{ row.permitNo || '（待补录）' }}</template>
         </el-table-column>
-        <el-table-column prop="projectName" label="项目名称" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="builderName" label="建设单位" min-width="160" show-overflow-tooltip />
+        <el-table-column
+          prop="projectName"
+          label="项目名称"
+          min-width="200"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="builderName"
+          label="建设单位"
+          min-width="160"
+          show-overflow-tooltip
+        />
         <el-table-column prop="bizType" label="业务类型" width="100" />
         <el-table-column label="应缴金额" width="130" align="right">
           <template #default="{ row }">{{ formatMoney(row.receivable) }}</template>
         </el-table-column>
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="STATUS_TAG[row.status] || 'info'" size="small">{{ statusText(row) }}</el-tag>
+            <el-tag :type="STATUS_TAG[row.status] || 'info'" size="small">{{
+              statusText(row)
+            }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="创建时间" width="170">
@@ -76,7 +129,13 @@
         <el-table-column label="操作" width="220" fixed="right">
           <template #default="{ row }">
             <!-- 详情按钮：跳转详情页 -->
-            <el-button link type="primary" @click="openDetail(row)">详情</el-button>
+            <el-button
+              link
+              type="primary"
+              style="margin-right: 6px; margin-left: 0"
+              @click="openDetail(row)"
+              >详情</el-button
+            >
             <!-- 根据 data 中 actions 配置动态渲染操作按钮（基于 business 权限过滤） -->
             <el-button
               v-for="action in visibleActions"
@@ -84,17 +143,19 @@
               link
               :type="actionType(action.key)"
               :loading="actionLoading(row.id, action.key)"
+              style="margin-right: 6px; margin-left: 0"
               @click="handleAction(action.key, row)"
             >
               {{ action.actionName }}
             </el-button>
 
-            <!-- 草稿待提交 / 退回待修改 下显示删除按钮 -->
+            <!-- 草稿待提交 下显示删除按钮 -->
             <el-button
-              v-if="checkPermi(['business:project-application:delete']) && (tab === 'DRAFT' || tab === 'returned')"
+              v-if="checkPermi(['business:project-application:delete']) && tab === 'DRAFT'"
               link
               type="danger"
               :loading="actionLoading(row.id, 'delete')"
+              style="margin-left: 0"
               @click="deleteRow(row)"
             >
               删除
@@ -132,7 +193,12 @@
             />
           </el-form-item>
           <el-form-item label="实际到账金额" prop="paidAmount">
-            <el-input-number v-model="actionForm.paidAmount" :min="0" :precision="2" style="width: 100%" />
+            <el-input-number
+              v-model="actionForm.paidAmount"
+              :min="0"
+              :precision="2"
+              style="width: 100%"
+            />
           </el-form-item>
         </template>
 
@@ -148,21 +214,42 @@
           </el-form-item>
         </template>
 
+        <!-- 签发日期：签发时显示 -->
+        <template v-if="actionDialog.type === 'issue'">
+          <el-form-item label="签发日期" prop="issueDate">
+            <el-date-picker
+              v-model="actionForm.issueDate"
+              type="date"
+              value-format="YYYY-MM-DD"
+              placeholder="请选择签发日期"
+              style="width: 100%"
+            />
+          </el-form-item>
+        </template>
+
         <!-- 审核意见 / 退回意见：approve 非必填，return 必填 -->
-        <template v-if="['approve', 'return', 'issue', 'confirmPaid', 'close'].includes(actionDialog.type)">
+        <template
+          v-if="['approve', 'return', 'issue', 'confirmPaid', 'close'].includes(actionDialog.type)"
+        >
           <el-form-item label="审批意见" :prop="actionDialog.type === 'return' ? 'opinion' : ''">
             <el-input
               v-model="actionForm.opinion"
               type="textarea"
               :rows="3"
-              :placeholder="actionDialog.type === 'return' ? '请输入退回意见（必填）' : '请输入审批意见（非必填）'"
+              :placeholder="
+                actionDialog.type === 'return'
+                  ? '请输入退回意见（必填）'
+                  : '请输入审批意见（非必填）'
+              "
             />
           </el-form-item>
         </template>
       </el-form>
       <template #footer>
         <el-button @click="actionDialog.visible = false">取消</el-button>
-        <el-button type="primary" :loading="actionDialog.loading" @click="confirmAction">确认</el-button>
+        <el-button type="primary" :loading="actionDialog.loading" @click="confirmAction"
+          >确认</el-button
+        >
       </template>
     </el-dialog>
   </div>
@@ -236,25 +323,19 @@ const data = [
     statusName: '待签发',
     statusCode: 'issue',
     business: 'business:pending:issue',
-    actions: [
-      { key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }
-    ]
+    actions: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }]
   },
   {
     statusName: '待签发(建设科复核)',
     statusCode: 'issue1',
     business: 'business:pending:issue1',
-    actions: [
-      { key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }
-    ]
+    actions: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }]
   },
   {
     statusName: '待签发(建设科过会)',
     statusCode: 'issue2',
     business: 'business:pending:issue2',
-    actions: [
-      { key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }
-    ]
+    actions: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }]
   },
   {
     statusName: '待缴款',
@@ -268,9 +349,7 @@ const data = [
     statusName: '待办结',
     statusCode: 'close',
     business: 'business:pending:close',
-    actions: [
-      { key: 'close', actionName: '办结', business: 'business:approval:close' }
-    ]
+    actions: [{ key: 'close', actionName: '办结', business: 'business:approval:close' }]
   },
   {
     statusName: '待信息补录',
@@ -286,9 +365,7 @@ const tabs = data
 const tab = ref('')
 
 /** 根据 business 权限过滤后的可见 tab 列表 */
-const visibleTabs = computed(() =>
-  tabs.filter((t) => checkPermi([t.business]))
-)
+const visibleTabs = computed(() => tabs.filter((t) => checkPermi([t.business])))
 
 /** 当前 tab 对应的 actions 配置（基于 business 权限过滤） */
 const visibleActions = computed(() => {
@@ -418,7 +495,8 @@ const actionForm = reactive({
   paidAmount: null,
   paymentNoticeNo: '',
   receiptSigner: '',
-  permitNo: ''
+  permitNo: '',
+  issueDate: ''
 })
 
 /** 动态校验规则：退回时 opinion 必填 */
@@ -437,6 +515,9 @@ const actionRules = computed(() => {
   if (actionDialog.type === 'supplement') {
     rules.permitNo = [{ required: true, message: '请输入工规证号', trigger: 'blur' }]
   }
+  if (actionDialog.type === 'issue') {
+    rules.issueDate = [{ required: true, message: '请选择签发日期', trigger: 'change' }]
+  }
   return rules
 })
 
@@ -448,6 +529,7 @@ function resetActionForm() {
   actionForm.paymentNoticeNo = ''
   actionForm.receiptSigner = ''
   actionForm.permitNo = ''
+  actionForm.issueDate = todayText()
 }
 
 /** 根据 action key 分发操作 */
@@ -456,7 +538,10 @@ function handleAction(key, row) {
   // 修改按钮：跳转到修改页面
   if (key === 'modify') {
     // 跳转到修改页面，复用 Create 页面
-    router.push({ path: '/project-application-create', query: { id: String(row.id), mode: 'edit' } })
+    router.push({
+      path: '/project-application-create',
+      query: { id: String(row.id), mode: 'edit' }
+    })
     return
   }
 
@@ -555,6 +640,8 @@ function buildUpdatePayload(row) {
     materialsCivilAirForm: row.materialsCivilAirForm,
     relatedPermitNo: row.relatedPermitNo,
     relatedProjectName: row.relatedProjectName,
+    residentialArea: row.residentialArea,
+    nonResidentialArea: row.nonResidentialArea,
     archivedResidentialArea: row.archivedResidentialArea,
     archivedReceivable: row.archivedReceivable,
     actualReceivable: row.actualReceivable
@@ -580,7 +667,9 @@ async function confirmAction() {
     supplement: '确认补录工规证号？'
   }
   try {
-    await ElMessageBox.confirm(confirmMap[actionDialog.type] || '确认操作？', '提示', { type: 'warning' })
+    await ElMessageBox.confirm(confirmMap[actionDialog.type] || '确认操作？', '提示', {
+      type: 'warning'
+    })
   } catch {
     return
   }
@@ -602,6 +691,7 @@ async function confirmAction() {
     } else if (type === 'issue') {
       payload.paymentNoticeNo = actionForm.paymentNoticeNo || undefined
       payload.opinion = actionForm.opinion || undefined
+      payload.issueDate = actionForm.issueDate || undefined
       await issueApi(payload)
     } else if (type === 'confirmPaid') {
       payload.paidAmount = actionForm.paidAmount
@@ -667,7 +757,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .page-header {
   margin-bottom: 20px;
 }
@@ -708,8 +797,24 @@ onMounted(() => {
   border: 1px solid #f0f0f0;
 }
 
-.search-bar :deep(.el-form--inline .el-form-item) {
+.search-bar :deep(.el-form-item) {
   margin-bottom: 12px;
+  width: 100%;
+}
+
+.amt-range {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.amt-range .el-input {
+  flex: 1;
+}
+
+.amt-separator {
+  margin: 0 6px;
+  flex-shrink: 0;
 }
 
 .pagination-wrap {

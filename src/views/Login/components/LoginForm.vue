@@ -3,7 +3,7 @@
     ref="formLogin"
     :model="loginData.loginForm"
     :rules="LoginRules"
-    label-width="72px"
+    label-width="90px"
     @submit.prevent="getCode()"
   >
     <!-- <el-form-item v-if="loginData.tenantEnable === 'true'" :label="t('login.tenantname')" prop="tenantName">

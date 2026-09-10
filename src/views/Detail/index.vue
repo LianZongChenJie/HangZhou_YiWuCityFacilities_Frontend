@@ -33,7 +33,7 @@
           <template #extra>
             <!-- 关联单据（同工规证号）模块：仅拆复建项目展示 -->
             <template v-if="isRebuild && form.relatedPermitNo">
-              <el-divider content-position="left">关联单据（同工规证号）</el-divider>
+              <el-divider content-position="left">关联单据</el-divider>
               <el-form label-width="180px" disabled>
                 <el-form-item label="原项目关联工规证号">
                   <el-input v-model="form.relatedPermitNo" />
@@ -108,7 +108,7 @@
     <el-dialog v-model="actionDialog.visible" :title="actionDialog.title" width="480px">
       <el-form ref="actionFormRef" :model="actionForm" :rules="actionRules" label-width="100px">
         <template v-if="actionDialog.type === 'confirmPaid'">
-          <el-form-item label="到账日期" prop="payDate">
+          <el-form-item label="到账日期" prop="payDate" label-width="125px">
             <el-date-picker
               v-model="actionForm.payDate"
               type="date"
@@ -117,8 +117,13 @@
               style="width: 100%"
             />
           </el-form-item>
-          <el-form-item label="实际到账金额" prop="paidAmount">
-            <el-input-number v-model="actionForm.paidAmount" :min="0" :precision="2" style="width: 100%" />
+          <el-form-item label="实际到账金额" prop="paidAmount" label-width="125px">
+            <el-input-number
+              v-model="actionForm.paidAmount"
+              :min="0"
+              :precision="2"
+              style="width: 100%"
+            />
           </el-form-item>
         </template>
 
@@ -134,21 +139,42 @@
           </el-form-item>
         </template>
 
+        <!-- 签发日期：签发时显示 -->
+        <template v-if="actionDialog.type === 'issue'">
+          <el-form-item label="签发日期" prop="issueDate">
+            <el-date-picker
+              v-model="actionForm.issueDate"
+              type="date"
+              value-format="YYYY-MM-DD"
+              placeholder="请选择签发日期"
+              style="width: 100%"
+            />
+          </el-form-item>
+        </template>
+
         <!-- 审批意见 / 退回意见 -->
-        <template v-if="['approve', 'return', 'issue', 'confirmPaid', 'close'].includes(actionDialog.type)">
-          <el-form-item label="审批意见" :prop="actionDialog.type === 'return' ? 'opinion' : ''">
+        <template
+          v-if="['approve', 'return', 'issue', 'confirmPaid', 'close'].includes(actionDialog.type)"
+        >
+          <el-form-item label="审批意见" :prop="actionDialog.type === 'return' ? 'opinion' : ''" :label-width="actionDialog.type === 'confirmPaid' ? '125px' : '100px'">
             <el-input
               v-model="actionForm.opinion"
               type="textarea"
               :rows="3"
-              :placeholder="actionDialog.type === 'return' ? '请输入退回意见（必填）' : '请输入审批意见（非必填）'"
+              :placeholder="
+                actionDialog.type === 'return'
+                  ? '请输入退回意见（必填）'
+                  : '请输入审批意见（非必填）'
+              "
             />
           </el-form-item>
         </template>
       </el-form>
       <template #footer>
         <el-button @click="actionDialog.visible = false">取消</el-button>
-        <el-button type="primary" :loading="actionDialog.loading" @click="confirmAction">确认</el-button>
+        <el-button type="primary" :loading="actionDialog.loading" @click="confirmAction"
+          >确认</el-button
+        >
       </template>
     </el-dialog>
   </div>
@@ -163,11 +189,11 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowLeft } from '@element-plus/icons-vue'
 import { CaseForm } from '@/components/CaseForm'
 import { STATUS_LABEL, FLOW_NODE } from '@/utils/constants'
-import { formatMoney, todayText } from '@/utils/calc'
+import { formatMoney, todayText, applyCalc } from '@/utils/calc'
 import { checkPermi } from '@/utils/permission'
-import { getDetail, getApprovalRecords } from './api'
-import dayjs from 'dayjs'
 import {
+  getDetail,
+  getApprovalRecords,
   updateItem,
   approve,
   returnModify,
@@ -175,7 +201,8 @@ import {
   confirmPaid as confirmPaidApi,
   closeCase as closeApi,
   supplementPermit
-} from '@/views/Pending/api'
+} from './api'
+import dayjs from 'dayjs'
 
 const route = useRoute()
 const router = useRouter()
@@ -215,31 +242,17 @@ function stepStatus(i) {
 
 /** 根据当前办件状态，确定可用的操作按钮列表 */
 const STATUS_ACTIONS = {
-  DRAFT: [
-    { key: 'submit', actionName: '提交审核', business: 'business:approval:submit' }
-  ],
-  RETURNED: [
-    { key: 'resubmit', actionName: '提交审核', business: 'business:approval:submit' }
-  ],
+  DRAFT: [{ key: 'submit', actionName: '提交审核', business: 'business:approval:submit' }],
+  RETURNED: [{ key: 'resubmit', actionName: '提交审核', business: 'business:approval:submit' }],
   REVIEW: [
     { key: 'approve', actionName: '审核通过', business: 'business:approval:approve' },
     { key: 'return', actionName: '退回', business: 'business:approval:return' }
   ],
-  ISSUE: [
-    { key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }
-  ],
-  ISSUE1: [
-    { key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }
-  ],
-  ISSUE2: [
-    { key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }
-  ],
-  PAY: [
-    { key: 'confirmPaid', actionName: '确认到账', business: 'business:approval:confirm-paid' }
-  ],
-  CLOSE: [
-    { key: 'close', actionName: '办结', business: 'business:approval:close' }
-  ],
+  ISSUE: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }],
+  ISSUE1: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }],
+  ISSUE2: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }],
+  PAY: [{ key: 'confirmPaid', actionName: '确认到账', business: 'business:approval:confirm-paid' }],
+  CLOSE: [{ key: 'close', actionName: '办结', business: 'business:approval:close' }],
   SECONDREVIEW: [
     { key: 'supplement', actionName: '补录证号', business: 'business:approval:supplement' }
   ]
@@ -257,6 +270,11 @@ const detailActions = computed(() => {
 const canModify = computed(() => {
   const s = form.status ? String(form.status).toUpperCase() : ''
   return s === 'DRAFT' || s === 'RETURNED'
+})
+
+/** 是否展示修改按钮 */
+const showModifyButton = computed(() => {
+  return checkPermi(['business:project-application:update']) && canModify.value
 })
 
 function actionType(key) {
@@ -301,6 +319,16 @@ async function loadDetail() {
     } else {
       form.landUses = []
     }
+    // 拆复建相关字段回显
+    form.relatedPermitNo = r.relatedPermitNo || ''
+    form.relatedProjectName = r.relatedProjectName || ''
+    form.archivedResidentialArea = r.archivedResidentialArea || 0
+    form.archivedNonResidentialArea = r.archivedNonResidentialArea || 0
+    form.archivedCivilAirArea = r.archivedCivilAirArea || 0
+    form.archivedReceivable = r.archivedReceivable || 0
+    form.actualReceivable = r.actualReceivable || 0
+    // 触发配套费计算
+    applyCalc(form)
     // 加载审批记录（仅进入正常审批流程后）
     loadApprovalRecords(id)
   } catch (e) {
@@ -314,7 +342,7 @@ async function loadDetail() {
 async function loadApprovalRecords(applicationId) {
   try {
     const res = await getApprovalRecords(applicationId)
-    approvalRecords.value = Array.isArray(res) ? res : (res?.list || [])
+    approvalRecords.value = Array.isArray(res) ? res : res?.list || []
   } catch {
     approvalRecords.value = []
   }
@@ -328,10 +356,16 @@ function statusLabel(status) {
 
 watch(() => route.query.id, loadDetail, { immediate: true })
 
-/** 返回，带二次确认 */
+/** 返回：无操作按钮且无修改按钮时直接返回上一页，否则二次确认 */
 async function handleBack() {
+  // 没有操作按钮且没有修改按钮时，无需确认，直接返回来源页
+  if (detailActions.value.length === 0 && !showModifyButton.value) {
+    goBack()
+    return
+  }
+  // 有操作按钮或修改按钮时，二次确认（可能涉及未保存的操作）
   try {
-    await ElMessageBox.confirm('确定返回吗？修改内容将不会保存', '提示', {
+    await ElMessageBox.confirm('确定返回吗？', '提示', {
       type: 'warning',
       confirmButtonText: '确定返回',
       cancelButtonText: '取消'
@@ -339,7 +373,16 @@ async function handleBack() {
   } catch {
     return
   }
-  router.push('/pending')
+  goBack()
+}
+
+/** 返回来源页，无历史记录时兜底到待处理页 */
+function goBack() {
+  if (window.history.length > 1) {
+    router.go(-1)
+  } else {
+    router.push('/pending')
+  }
 }
 
 function goEdit() {
@@ -417,7 +460,7 @@ function buildUpdatePayload(row) {
     plotInfo: row.plotInfo,
     fundSource: row.fundSource,
     fundSourceRemark: row.fundSourceRemark,
-    landUses: row.landUses,
+    landUses: Array.isArray(row.landUses) ? row.landUses.join(',') : row.landUses,
     landUseRemark: row.landUseRemark,
     builderName: row.builderName,
     contact: row.contact,
@@ -443,6 +486,8 @@ function buildUpdatePayload(row) {
     materialsCivilAirForm: row.materialsCivilAirForm,
     relatedPermitNo: row.relatedPermitNo,
     relatedProjectName: row.relatedProjectName,
+    residentialArea: row.residentialArea,
+    nonResidentialArea: row.nonResidentialArea,
     archivedResidentialArea: row.archivedResidentialArea,
     archivedReceivable: row.archivedReceivable,
     actualReceivable: row.actualReceivable
@@ -465,7 +510,8 @@ const actionForm = reactive({
   paidAmount: null,
   paymentNoticeNo: '',
   receiptSigner: '',
-  permitNo: ''
+  permitNo: '',
+  issueDate: ''
 })
 
 const actionRules = computed(() => {
@@ -483,6 +529,9 @@ const actionRules = computed(() => {
   if (actionDialog.type === 'supplement') {
     rules.permitNo = [{ required: true, message: '请输入工规证号', trigger: 'blur' }]
   }
+  if (actionDialog.type === 'issue') {
+    rules.issueDate = [{ required: true, message: '请选择签发日期', trigger: 'change' }]
+  }
   return rules
 })
 
@@ -493,6 +542,7 @@ function resetActionForm() {
   actionForm.paymentNoticeNo = ''
   actionForm.receiptSigner = ''
   actionForm.permitNo = ''
+  actionForm.issueDate = todayText()
 }
 
 /** 确认弹窗操作 */
@@ -512,7 +562,9 @@ async function confirmAction() {
     supplement: '确认补录工规证号？'
   }
   try {
-    await ElMessageBox.confirm(confirmMap[actionDialog.type] || '确认操作？', '提示', { type: 'warning' })
+    await ElMessageBox.confirm(confirmMap[actionDialog.type] || '确认操作？', '提示', {
+      type: 'warning'
+    })
   } catch {
     return
   }
@@ -531,9 +583,11 @@ async function confirmAction() {
     } else if (type === 'issue') {
       payload.paymentNoticeNo = actionForm.paymentNoticeNo || undefined
       payload.opinion = actionForm.opinion || undefined
+      payload.issueDate = actionForm.issueDate || undefined
       await issueApi(payload)
     } else if (type === 'confirmPaid') {
       payload.paidAmount = actionForm.paidAmount
+      payload.paymentReceivedDate = actionForm.payDate || undefined
       payload.opinion = actionForm.opinion || undefined
       await confirmPaidApi(payload)
     } else if (type === 'close') {
@@ -565,7 +619,6 @@ async function confirmAction() {
 </script>
 
 <style scoped>
-
 .page-header {
   margin-bottom: 12px;
 }

@@ -44,7 +44,7 @@ export function emptyForm() {
   return {
     projectName: '',
     plotInfo: '',
-    fundSource: '私营',
+    fundSource: '',
     fundSourceRemark: '',
     landUses: [],
     landUseRemark: '',

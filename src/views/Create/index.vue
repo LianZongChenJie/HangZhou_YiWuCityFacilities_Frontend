@@ -4,16 +4,8 @@
       <CaseForm ref="cf" v-model="form" :status="form.status || (isEdit ? 'draft' : '')">
         <template #actions>
           <el-button @click="$router.back()">取消</el-button>
-          <template v-if="isEdit">
-            <!-- 修改模式：保存草稿 + 提交审批 -->
-            <el-button :loading="saving" @click="save(false)">保存草稿</el-button>
-            <el-button type="primary" :loading="saving" @click="save(true)">提交审批</el-button>
-          </template>
-          <template v-else>
-            <!-- 新建模式：保存草稿 + 提交审核 -->
-            <el-button :loading="saving" @click="save(false)">保存草稿</el-button>
-            <el-button type="primary" :loading="saving" @click="save(true)">提交审核</el-button>
-          </template>
+          <el-button :loading="saving" @click="save(false)">保存草稿</el-button>
+          <el-button type="primary" :loading="saving" @click="save(true)">提交审核</el-button>
         </template>
       </CaseForm>
     </div>
@@ -26,8 +18,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { CaseForm } from '@/components/CaseForm'
 import { emptyForm, applyCalc } from '@/utils/calc'
-import { create as createApi, draft as draftApi } from './api'
-import { getDetail, update as updateApi } from '@/views/Detail/api'
+import { createApi, draftApi, getDetail, updateApi, submitApi } from './api'
 import type { Request } from './type'
 
 const route = useRoute()
@@ -74,6 +65,8 @@ function buildPayload(): Request {
     materialsCivilAirForm: form.materials?.civilAirForm,
     relatedPermitNo: form.relatedPermitNo || undefined,
     relatedProjectName: form.relatedProjectName || undefined,
+    residentialArea: form.residentialArea || undefined,
+    nonResidentialArea: form.nonResidentialArea || undefined,
     archivedResidentialArea: form.archivedResidentialArea || undefined,
     archivedReceivable: form.archivedReceivable || undefined,
     actualReceivable: form.actualReceivable || undefined
@@ -94,7 +87,7 @@ async function loadDetail() {
     const r = res || {}
     form.projectName = r.projectName || ''
     form.plotInfo = r.plotInfo || ''
-    form.fundSource = r.fundSource || '私营'
+    form.fundSource = r.fundSource || ''
     form.fundSourceRemark = r.fundSourceRemark || ''
     form.landUseRemark = r.landUseRemark || ''
     form.builderName = r.builderName || ''
@@ -175,8 +168,9 @@ async function save(submit?: boolean) {
 
     if (isEdit.value) {
       // 修改模式：保存草稿 / 提交审批，都调用 update 接口，入参带 id
-      const updatePayload = { ...payload, id: Number(route.query.id) } as any
+      const updatePayload = { ...payload, id: Number(route.query.id) }
       await updateApi(updatePayload)
+      await submitApi({ applicationId: Number(route.query.id) })
       if (submit) {
         // 提交审批成功
         ElMessage.success('提交审批成功')
@@ -223,7 +217,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .page-header {
   margin-bottom: 20px;
 }

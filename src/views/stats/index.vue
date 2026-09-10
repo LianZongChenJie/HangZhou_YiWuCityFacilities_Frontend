@@ -81,15 +81,17 @@
           min-width="180"
           show-overflow-tooltip
         />
-        <el-table-column label="土地用途" min-width="120" show-overflow-tooltip>
-          <template #default="{ row }">{{ landUseText(row) }}</template>
-        </el-table-column>
+        <el-table-column prop="landUses" label="土地用途" min-width="120" show-overflow-tooltip />
         <el-table-column prop="residentialArea" label="住宅面积" width="100" />
         <el-table-column prop="nonResidentialArea" label="非住宅面积" width="110" />
         <el-table-column prop="civilAirArea" label="人防面积" width="90" />
-        <el-table-column label="应缴配套费" width="120" align="right">
-          <template #default="{ row }">{{ formatMoney(row.receivable) }}</template>
-        </el-table-column>
+        <el-table-column
+          prop="receivable"
+          label="应缴配套费"
+          width="120"
+          align="right"
+          :formatter="(_, __, val) => formatMoney(val)"
+        />
         <el-table-column prop="issueDate" label="签发日期" width="110" />
         <el-table-column prop="payDate" label="缴费到账日期" width="120" />
         <el-table-column prop="contact" label="联系人" width="90" />
@@ -116,7 +118,7 @@
 import { reactive, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { CASE_STATUS_LABEL } from '@/utils/constants'
-import { formatMoney, landUseText } from '@/utils/calc'
+import { formatMoney } from '@/utils/calc'
 import download from '@/utils/download'
 import { getList, getSummary, exportList } from './api'
 import type { Request, ReportApplicationVO } from './type'
@@ -177,6 +179,8 @@ async function fetchData() {
     const [pageRes, summaryRes] = await Promise.all([getList(params), getSummary(params)])
     rows.value = pageRes?.list || []
     total.value = pageRes?.total || 0
+
+    console.log('pageRes', pageRes)
     // 映射汇总数据
     const s = summaryRes || {}
     summary.value = [
@@ -226,7 +230,7 @@ async function exportXls() {
   exportLoading.value = true
   try {
     const data = await exportList(buildParams())
-    download.excel(data, '配套费办件清单.xls')
+    download.excel(data, '配套费办件清单.xlsx')
   } catch (e: any) {
     ElMessage.error(e?.message || '导出失败，请稍后重试')
   } finally {

@@ -4,13 +4,8 @@
       <el-form :model="q" label-width="100px">
         <el-row :gutter="16">
           <el-col :span="8">
-            <el-form-item label="工规证号">
-              <el-input
-                v-model="q.permitNo"
-                placeholder="精确唯一查询"
-                clearable
-                style="width: 100%"
-              />
+            <el-form-item label="项目名称">
+              <el-input v-model="q.projectName" placeholder="模糊" clearable style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
@@ -18,9 +13,15 @@
               <el-input v-model="q.builderName" placeholder="模糊" clearable style="width: 100%" />
             </el-form-item>
           </el-col>
+
           <el-col :span="8">
-            <el-form-item label="项目名称">
-              <el-input v-model="q.projectName" placeholder="模糊" clearable style="width: 100%" />
+            <el-form-item label="工规证号">
+              <el-input
+                v-model="q.permitNo"
+                placeholder="精确唯一查询"
+                clearable
+                style="width: 100%"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -232,7 +233,7 @@ function buildParams() {
     builderName: q.value.builderName || undefined,
     projectName: q.value.projectName || undefined,
     bizType: q.value.bizType || undefined,
-    statusFilter: q.value.status || undefined,
+    status: q.value.status || undefined,
     acceptDates:
       q.value.acceptDates && q.value.acceptDates.length === 2 ? q.value.acceptDates : undefined,
     timeKind: q.value.timeKind || undefined,
@@ -295,7 +296,7 @@ function open(row, mode) {
   router.push({ path: '/detail', query: { id: row.id, mode: mode || 'view' } })
 }
 function print(row) {
-  window.open(location.origin + location.pathname + '#/print/' + row.id, '_blank')
+  window.open(`/print?id=${row.id}`, '_blank')
 }
 function canHandle(row) {
   const role = user.role

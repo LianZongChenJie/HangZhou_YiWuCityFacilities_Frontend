@@ -104,6 +104,16 @@ const remainingRouter: AppRouteRecordRaw[] = [
     }
   },
   {
+    path: '/print',
+    component: () => import('@/views/Print/index.vue'),
+    name: 'Print',
+    meta: {
+      hidden: true,
+      title: '打印',
+      noTagsView: true
+    }
+  },
+  {
     path: '/sso',
     component: () => import('@/views/Login/Login.vue'),
     name: 'SSOLogin',

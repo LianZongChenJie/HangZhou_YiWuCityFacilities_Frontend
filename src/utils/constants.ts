@@ -487,6 +487,8 @@ export const ROLES = {
   accept: 'accept',
   review: 'review',
   issue: 'issue',
+  issue1: 'issue1',
+  issue2: 'issue2',
   close: 'close',
   admin: 'admin'
 }
@@ -495,22 +497,26 @@ export const ROLE_LABEL = {
   accept: '受理岗',
   review: '审核岗',
   issue: '签发岗',
+  issue1: '签发岗(建设科复核)',
+  issue2: '签发岗(建设科过会)',
   close: '办结岗',
   admin: '管理岗'
 }
 
 export const HOME_PATH = {
   accept: '/workbench',
-  review: '/case/pending',
-  issue: '/case/pending',
-  close: '/case/pending',
-  admin: '/stats'
+  review: '/pending',
+  issue: '/pending',
+  close: '/pending',
+  admin: '/pending'
 }
 
 export const STATUS = {
   draft: 'draft',
   review: 'review',
   issue: 'issue',
+  issue1: 'issue1',
+  issue2: 'issue2',
   pay: 'pay',
   close: 'close',
   archived: 'archived'
@@ -527,7 +533,7 @@ export const STATUS_LABEL = {
   CONFIRM_PAID: '已确认到账',
   SUPPLEMENT: '已补录',
   CLOSE: '已办结',
-  ARCHIVE: '已归档',
+  ARCHIVE: '已归档'
 }
 
 /** 办件业务状态 → 中文标签（列表/统计/待办等业务页面使用） */
@@ -535,6 +541,8 @@ export const CASE_STATUS_LABEL = {
   draft: '待提交',
   review: '待审核',
   issue: '待签发',
+  issue1: '待签发(建设科复核)',
+  issue2: '待签发(建设科过会)',
   pay: '待缴款',
   close: '待办结',
   archived: '已归档',
@@ -557,6 +565,8 @@ export const STATUS_TAG = {
   draft: 'info',
   review: 'warning',
   issue: 'primary',
+  issue1: 'primary',
+  issue2: 'primary',
   pay: 'danger',
   close: 'success',
   archived: 'success',
@@ -567,6 +577,8 @@ export const FLOW_NODES = [
   { key: 'draft', label: '待提交' },
   { key: 'review', label: '待审核' },
   { key: 'issue', label: '待签发' },
+  { key: 'issue1', label: '待签发(建设科复核)' },
+  { key: 'issue2', label: '待签发(建设科过会)' },
   { key: 'pay', label: '待缴款' },
   { key: 'close', label: '待办结' },
   { key: 'archived', label: '已归档' },
@@ -592,7 +604,5 @@ export const BIZ_TYPES = ['初次', '变更', '竣备', '历史补缴', '免征'
 
 export const PROJECT_SUBTYPES = ['新建', '改扩建', '拆复建', '旧城改造拆建']
 
-
 export const UNIT_RESIDENTIAL = 30
 export const UNIT_NON_RESIDENTIAL = 80
-

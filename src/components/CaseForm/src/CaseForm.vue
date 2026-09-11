@@ -50,6 +50,7 @@
             v-model="form.reductionAmount"
             :min="0"
             :precision="2"
+            :controls="false"
             style="width: 100%"
           />
         </el-form-item>
@@ -117,7 +118,7 @@
     <el-form-item label="工规证号" :required="!form.isFourCerts">
       <el-input
         v-model="form.permitNo"
-        :disabled="form.isFourCerts"
+        :disabled="form.isFourCerts || readonly"
         :placeholder="form.isFourCerts ? '四证齐发，后期补录' : '必填'"
       />
     </el-form-item>
@@ -570,7 +571,7 @@ async function validate(submit) {
   // 再做业务校验
   if (!form.materials.feeForm) return Promise.reject(new Error('请勾选已收取缴费表'))
   if (!form.isFourCerts && !form.materials.permitCopy)
-    return Promise.reject(new Error('请勾选已收取工规证复印件'))
+    return Promise.reject(new Error('请勾选《建设工程规划许可证》复印件'))
   if ((Number(form.civilAirArea) || 0) > 0 && !form.materials.civilAirForm) {
     return Promise.reject(new Error('人防面积大于 0，请勾选《人防工程易地建设核实核定表》'))
   }
@@ -579,7 +580,7 @@ async function validate(submit) {
   return true
 }
 
-defineExpose({ validate, form })
+defineExpose({ validate, form, clearValidate: () => formRef.value?.clearValidate?.() })
 </script>
 
 <style scoped>

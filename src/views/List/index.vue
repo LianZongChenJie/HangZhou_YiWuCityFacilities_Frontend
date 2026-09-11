@@ -239,7 +239,7 @@ function buildParams() {
     timeKind: q.value.timeKind || undefined,
     otherDates:
       q.value.otherDates && q.value.otherDates.length === 2 ? q.value.otherDates : undefined,
-    reduction: q.value.reduction,
+    reduction: Number(q.value.reduction) === 1,
     amount:
       q.value.minAmt !== '' || q.value.maxAmt !== ''
         ? [

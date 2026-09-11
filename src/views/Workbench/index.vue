@@ -45,8 +45,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
-import { useCaseStore } from '@/stores/cases'
+import { useUserStore } from '@/store/user'
+import { useCaseStore } from '@/store/cases'
 
 const router = useRouter()
 const user = useUserStore()

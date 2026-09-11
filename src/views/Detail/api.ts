@@ -22,6 +22,8 @@ enum Api {
   close = '/business/approval/close',
   /** 补录证号 */
   supplement = '/business/approval/supplement',
+  /** 提交审核 */
+  submit = '/business/approval/submit',
   /** 建设科复核 */
   issueReview = '/business/approval/issue1-review',
   /** 建设科过会 */
@@ -61,6 +63,10 @@ export const closeCase = (data: ApprovalProcessReqVO) =>
 /** 补录证号 */
 export const supplementPermit = (data: ApprovalProcessReqVO) =>
   request.post<boolean>({ url: Api.supplement, data })
+
+/** 提交审核 */
+export const submitItem = (data: { applicationId: number }) =>
+  request.post<boolean>({ url: Api.submit, data })
 
 /** 建设科复核 */
 export const issueReview = (data: ApprovalProcessReqVO) =>

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { CaseForm } from '@/components/CaseForm'
@@ -97,12 +97,12 @@ async function loadDetail() {
     form.aboveArea = r.aboveArea ?? null
     form.underArea = r.underArea ?? null
     form.aboveResidentialArea = r.aboveResidentialArea ?? null
-    form.civilAirArea = r.civilAirArea ?? 0
+    form.civilAirArea = r.civilAirArea ?? null
     form.bizType = r.bizType || ''
     form.projectSubtype = r.projectSubtype || ''
     form.isFourCerts = !!r.isFourCerts
     form.hasReduction = !!r.hasReduction
-    form.reductionAmount = r.reductionAmount ?? 0
+    form.reductionAmount = r.reductionAmount ?? null
     form.reductionBasis = r.reductionBasis || ''
     form.amountManual = !!r.amountManual
     form.receivable = r.receivable ?? 0
@@ -191,8 +191,16 @@ async function save(submit?: boolean) {
             cancelButtonText: '返回待处理',
             type: 'success'
           })
+          // 等待弹窗关闭动画完成后再执行后续操作
+          await new Promise((resolve) => setTimeout(resolve, 300))
           Object.assign(form, emptyForm())
-          window.scrollTo(0, 0)
+          // 清除校验状态，避免空表单触发必填红框
+          cf.value?.clearValidate?.()
+          await nextTick()
+          // 滚动到顶部
+          window.scrollTo({ top: 0, behavior: 'instant' })
+          document.documentElement.scrollTop = 0
+          document.body.scrollTop = 0
         } catch {
           router.push('/pending')
         }

@@ -2,12 +2,14 @@
   <div class="app-container">
     <div class="tabs-card">
       <el-tabs v-model="tab" @tab-change="onTab">
-        <el-tab-pane
-          v-for="t in visibleTabs"
-          :key="t.statusCode"
-          :label="t.statusName"
-          :name="t.statusCode"
-        />
+        <el-tab-pane v-for="t in visibleTabs" :key="t.statusCode" :name="t.statusCode">
+          <template #label>
+            {{ t.statusName }}
+            <span v-if="workbenchCounts[t.statusCode]" class="tab-count">
+              {{ workbenchCounts[t.statusCode] }}
+            </span>
+          </template>
+        </el-tab-pane>
       </el-tabs>
 
       <!-- 所有 tab 共用的筛选条件 -->
@@ -15,17 +17,18 @@
         <el-form :model="query" label-width="110px">
           <el-row :gutter="16">
             <el-col :span="8">
-              <el-form-item label="工规证号">
+              <el-form-item label="项目名称">
                 <el-input
-                  v-model="query.permitNo"
-                  placeholder="精准查询"
+                  v-model="query.projectName"
+                  placeholder="请输入"
                   clearable
                   @keyup.enter="handleQuery"
                 />
               </el-form-item>
             </el-col>
+
             <el-col :span="8">
-              <el-form-item label="建设单位名称">
+              <el-form-item label="单位名称">
                 <el-input
                   v-model="query.builderName"
                   placeholder="请输入"
@@ -35,10 +38,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="8">
-              <el-form-item label="项目名称">
+              <el-form-item label="工规证号">
                 <el-input
-                  v-model="query.projectName"
-                  placeholder="请输入"
+                  v-model="query.permitNo"
+                  placeholder="精准查询"
                   clearable
                   @keyup.enter="handleQuery"
                 />
@@ -97,9 +100,6 @@
       </div>
 
       <el-table :data="filtered" border stripe v-loading="loading">
-        <el-table-column prop="permitNo" label="工规证号" min-width="170">
-          <template #default="{ row }">{{ row.permitNo || '（待补录）' }}</template>
-        </el-table-column>
         <el-table-column
           prop="projectName"
           label="项目名称"
@@ -112,6 +112,9 @@
           min-width="160"
           show-overflow-tooltip
         />
+        <el-table-column prop="permitNo" label="工规证号" min-width="170">
+          <template #default="{ row }">{{ row.permitNo || '（待补录）' }}</template>
+        </el-table-column>
         <el-table-column prop="bizType" label="业务类型" width="100" />
         <el-table-column label="应缴金额" width="130" align="right">
           <template #default="{ row }">{{ formatMoney(row.receivable) }}</template>
@@ -183,7 +186,7 @@
     <el-dialog v-model="actionDialog.visible" :title="actionDialog.title" width="480px">
       <el-form ref="actionFormRef" :model="actionForm" :rules="actionRules" label-width="100px">
         <template v-if="actionDialog.type === 'confirmPaid'">
-          <el-form-item label="到账日期" prop="payDate">
+          <el-form-item label="到账日期" prop="payDate" label-width="125px">
             <el-date-picker
               v-model="actionForm.payDate"
               type="date"
@@ -192,18 +195,19 @@
               style="width: 100%"
             />
           </el-form-item>
-          <el-form-item label="实际到账金额" prop="paidAmount">
-            <el-input-number
-              v-model="actionForm.paidAmount"
-              :min="0"
-              :precision="2"
-              style="width: 100%"
-            />
-          </el-form-item>
+<el-form-item label="实际到账金额" prop="paidAmount" label-width="125px">
+          <el-input-number
+            v-model="actionForm.paidAmount"
+            :min="0"
+            :precision="2"
+            :controls="false"
+            style="width: 100%"
+          />
+        </el-form-item>
         </template>
 
         <template v-if="actionDialog.type === 'close'">
-          <el-form-item label="领取人签字" prop="receiptSigner">
+          <el-form-item label="领取人" prop="receiptSigner">
             <el-input v-model="actionForm.receiptSigner" placeholder="请输入领取人姓名" />
           </el-form-item>
         </template>
@@ -227,17 +231,40 @@
           </el-form-item>
         </template>
 
-        <!-- 审核意见 / 退回意见：approve 非必填，return 必填 -->
+        <!-- 审核意见 / 退回意见：approve 非必填，return/issuexReturn 必填 -->
         <template
-          v-if="['approve', 'return', 'issue', 'confirmPaid', 'close'].includes(actionDialog.type)"
+          v-if="
+            [
+              'approve',
+              'return',
+              'issueReturn',
+              'issue1Return',
+              'issue2Return',
+              'issue',
+              'issueReview',
+              'issueMeeting',
+              'confirmPaid',
+              'close'
+            ].includes(actionDialog.type)
+          "
         >
-          <el-form-item label="审批意见" :prop="actionDialog.type === 'return' ? 'opinion' : ''">
+          <el-form-item
+            label="审批意见"
+            :prop="
+              ['return', 'issueReturn', 'issue1Return', 'issue2Return'].includes(actionDialog.type)
+                ? 'opinion'
+                : ''
+            "
+            :label-width="actionDialog.type === 'confirmPaid' ? '125px' : '100px'"
+          >
             <el-input
               v-model="actionForm.opinion"
               type="textarea"
               :rows="3"
               :placeholder="
-                actionDialog.type === 'return'
+                ['return', 'issueReturn', 'issue1Return', 'issue2Return'].includes(
+                  actionDialog.type
+                )
                   ? '请输入退回意见（必填）'
                   : '请输入审批意见（非必填）'
               "
@@ -256,9 +283,10 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref, onMounted } from 'vue'
+import { computed, reactive, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { STATUS_TAG, CASE_STATUS_LABEL, BIZ_TYPES } from '@/utils/constants'
 import { formatMoney, todayText } from '@/utils/calc'
 import { checkPermi } from '@/utils/permission'
@@ -271,11 +299,16 @@ import {
   issue as issueApi,
   confirmPaid as confirmPaidApi,
   closeCase as closeApi,
-  supplementPermit
+  supplementPermit,
+  issueReview,
+  issueMeeting,
+  submitItem,
+  getWorkbench
 } from './api'
 import dayjs from 'dayjs'
 
 const router = useRouter()
+const { emitter } = useEmitt()
 
 const loading = ref(false)
 const total = ref(0)
@@ -315,33 +348,43 @@ const data = [
     statusCode: 'review',
     business: 'business:pending:review',
     actions: [
-      { key: 'approve', actionName: '审核通过', business: 'business:approval:approve' },
-      { key: 'return', actionName: '退回', business: 'business:approval:return' }
+      { key: 'return', actionName: '退回', business: 'business:approval:return' },
+      { key: 'approve', actionName: '审核通过', business: 'business:approval:approve' }
     ]
   },
   {
     statusName: '待签发',
     statusCode: 'issue',
     business: 'business:pending:issue',
-    actions: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }]
+    actions: [
+      { key: 'issueReturn', actionName: '退回', business: 'business:approval:issueReturn' },
+      { key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }
+    ]
   },
   {
     statusName: '待签发(建设科复核)',
     statusCode: 'issue1',
     business: 'business:pending:issue1',
-    actions: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }]
+    actions: [
+      { key: 'issue1Return', actionName: '退回', business: 'business:approval:issue1Return' },
+      { key: 'issueReview', actionName: '复核通过', business: 'business:approval:issue' }
+    ]
   },
   {
     statusName: '待签发(建设科过会)',
     statusCode: 'issue2',
     business: 'business:pending:issue2',
-    actions: [{ key: 'issue', actionName: '确认签发', business: 'business:approval:issue' }]
+    actions: [
+      { key: 'issue2Return', actionName: '退回', business: 'business:approval:issue2Return' },
+      { key: 'issueMeeting', actionName: '过会通过', business: 'business:approval:issue' }
+    ]
   },
   {
     statusName: '待缴款',
     statusCode: 'pay',
     business: 'business:pending:pay',
     actions: [
+      { key: 'issueReturn', actionName: '退回', business: 'business:approval:issueReturn' },
       { key: 'confirmPaid', actionName: '确认到账', business: 'business:approval:confirm-paid' }
     ]
   },
@@ -363,6 +406,33 @@ const data = [
 
 const tabs = data
 const tab = ref('')
+
+/** 工作台各状态待办数量 */
+const workbenchCounts = ref({})
+
+/** 加载工作台统计数据 */
+async function fetchWorkbench() {
+  try {
+    const res = await getWorkbench()
+    workbenchCounts.value = res || {}
+  } catch {
+    workbenchCounts.value = {}
+  }
+}
+
+/** 轮询定时器 */
+let pollTimer
+
+/** 启动轮询：每 2 秒刷新列表和工作台统计 */
+function startPolling() {
+  pollTimer = setInterval(
+    () => {
+      fetchData()
+      fetchWorkbench()
+    },
+    1000 * 60 * 5
+  )
+}
 
 /** 根据 business 权限过滤后的可见 tab 列表 */
 const visibleTabs = computed(() => tabs.filter((t) => checkPermi([t.business])))
@@ -474,7 +544,7 @@ function onSizeChange(size) {
 /** 根据 action key 返回按钮类型 */
 function actionType(key) {
   if (['approve', 'confirmPaid', 'close', 'supplement'].includes(key)) return 'success'
-  if (['return'].includes(key)) return 'danger'
+  if (['return', 'issueReturn', 'issue1Return', 'issue2Return'].includes(key)) return 'danger'
   return 'primary'
 }
 
@@ -502,7 +572,7 @@ const actionForm = reactive({
 /** 动态校验规则：退回时 opinion 必填 */
 const actionRules = computed(() => {
   const rules = {}
-  if (actionDialog.type === 'return') {
+  if (['return', 'issueReturn', 'issue1Return', 'issue2Return'].includes(actionDialog.type)) {
     rules.opinion = [{ required: true, message: '请输入退回意见', trigger: 'blur' }]
   }
   if (actionDialog.type === 'confirmPaid') {
@@ -515,7 +585,11 @@ const actionRules = computed(() => {
   if (actionDialog.type === 'supplement') {
     rules.permitNo = [{ required: true, message: '请输入工规证号', trigger: 'blur' }]
   }
-  if (actionDialog.type === 'issue') {
+  if (
+    actionDialog.type === 'issue' ||
+    actionDialog.type === 'issueReview' ||
+    actionDialog.type === 'issueMeeting'
+  ) {
     rules.issueDate = [{ required: true, message: '请选择签发日期', trigger: 'change' }]
   }
   return rules
@@ -555,7 +629,12 @@ function handleAction(key, row) {
   const titleMap = {
     approve: '审核通过',
     return: '退回修改',
+    issueReturn: '退回修改',
+    issue1Return: '退回修改',
+    issue2Return: '退回修改',
     issue: '确认签发',
+    issueReview: '建设科复核通过',
+    issueMeeting: '建设科过会通过',
     confirmPaid: '确认到账',
     close: '办结归档',
     supplement: '补录工规证号'
@@ -570,9 +649,6 @@ function handleAction(key, row) {
   resetActionForm()
 
   // 预填一些默认值
-  if (key === 'close') {
-    actionForm.receiptSigner = row.builderName || ''
-  }
   if (key === 'supplement') {
     actionForm.permitNo = row.permitNo || ''
   }
@@ -584,7 +660,7 @@ function handleAction(key, row) {
   setTimeout(() => actionFormRef.value?.clearValidate(), 0)
 }
 
-/** 提交审核：二次弹窗确认 → 调用 update 接口 */
+/** 提交审核：二次弹窗确认 → 仅调用 submit 接口 */
 async function submitForReview(row, key) {
   const actionLabel = key === 'resubmit' ? '重新提交审核' : '提交审核'
   try {
@@ -594,11 +670,12 @@ async function submitForReview(row, key) {
   }
   setActionLoading(row.id, key, true)
   try {
-    // 从列表行数据构建 update 入参（入参与新建一致，多了 id 字段）
-    const payload = buildUpdatePayload(row)
-    await updateItem(payload)
+    // 仅调用 submit 接口推进审批流（列表页不编辑数据，无需调 update）
+    await submitItem({ applicationId: row.id })
     ElMessage.success(`${actionLabel}成功`)
     fetchData()
+    fetchWorkbench()
+    emitter.emit('pending-stats-updated')
   } catch (e) {
     ElMessage.error(e?.message || `${actionLabel}失败`)
   } finally {
@@ -661,7 +738,12 @@ async function confirmAction() {
   const confirmMap = {
     approve: '确认审核通过？',
     return: '确认退回该办件？',
+    issueReturn: '确认退回该办件？',
+    issue1Return: '确认退回该办件？',
+    issue2Return: '确认退回该办件？',
     issue: '确认签发并进入待缴款？',
+    issueReview: '确认建设科复核通过？',
+    issueMeeting: '确认建设科过会通过？',
     confirmPaid: '确认到账并进入待办结？',
     close: '确认办结归档？',
     supplement: '确认补录工规证号？'
@@ -685,7 +767,12 @@ async function confirmAction() {
     if (type === 'approve') {
       payload.opinion = actionForm.opinion || undefined
       await approve(payload)
-    } else if (type === 'return') {
+    } else if (
+      type === 'return' ||
+      type === 'issueReturn' ||
+      type === 'issue1Return' ||
+      type === 'issue2Return'
+    ) {
       payload.opinion = actionForm.opinion
       await returnModify(payload)
     } else if (type === 'issue') {
@@ -693,8 +780,17 @@ async function confirmAction() {
       payload.opinion = actionForm.opinion || undefined
       payload.issueDate = actionForm.issueDate || undefined
       await issueApi(payload)
+    } else if (type === 'issueReview') {
+      payload.opinion = actionForm.opinion || undefined
+      payload.issueDate = actionForm.issueDate || undefined
+      await issueReview(payload)
+    } else if (type === 'issueMeeting') {
+      payload.opinion = actionForm.opinion || undefined
+      payload.issueDate = actionForm.issueDate || undefined
+      await issueMeeting(payload)
     } else if (type === 'confirmPaid') {
       payload.paidAmount = actionForm.paidAmount
+      payload.paymentReceivedDate = actionForm.payDate || undefined
       payload.opinion = actionForm.opinion || undefined
       await confirmPaidApi(payload)
     } else if (type === 'close') {
@@ -704,12 +800,18 @@ async function confirmAction() {
     } else if (type === 'supplement') {
       payload.permitNo = actionForm.permitNo
       await supplementPermit(payload)
+      await submitItem({ applicationId: payload.applicationId })
     }
 
     const successMap = {
       approve: '已审核通过',
       return: '已退回',
+      issueReturn: '已退回',
+      issue1Return: '已退回',
+      issue2Return: '已退回',
       issue: '已签发',
+      issueReview: '复核已通过',
+      issueMeeting: '过会已通过',
       confirmPaid: '已确认到账',
       close: '已办结归档',
       supplement: '已补录证号'
@@ -717,6 +819,8 @@ async function confirmAction() {
     ElMessage.success(successMap[type] || '操作成功')
     actionDialog.visible = false
     fetchData()
+    fetchWorkbench()
+    emitter.emit('pending-stats-updated')
   } catch (e) {
     ElMessage.error(e?.message || '操作失败')
   } finally {
@@ -741,6 +845,8 @@ async function deleteRow(row) {
     await deleteItem(row.id)
     ElMessage.success('删除成功')
     fetchData()
+    fetchWorkbench()
+    emitter.emit('pending-stats-updated')
   } catch (e) {
     ElMessage.error(e?.message || '删除失败')
   } finally {
@@ -753,6 +859,15 @@ onMounted(() => {
     tab.value = visibleTabs.value[0].statusCode
   }
   fetchData()
+  fetchWorkbench()
+  startPolling()
+})
+
+onBeforeUnmount(() => {
+  if (pollTimer) {
+    clearInterval(pollTimer)
+    pollTimer = undefined
+  }
 })
 </script>
 
@@ -787,6 +902,22 @@ onMounted(() => {
   padding: 16px 24px 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
   border: 1px solid #f0f0f0;
+}
+
+/* Tab 上的数字徽标 */
+.tab-count {
+  display: inline-block;
+  min-width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 10px;
+  background: #f53f3f;
+  color: #fff;
+  font-size: 12px;
+  padding: 0 6px;
+  margin-left: 4px;
+  vertical-align: middle;
 }
 
 .search-bar {

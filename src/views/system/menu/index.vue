@@ -1,5 +1,4 @@
 <template>
-
   <!-- 搜索工作栏 -->
   <ContentWrap>
     <el-form
@@ -7,21 +6,21 @@
       :inline="true"
       :model="queryParams"
       class="-mb-15px"
-      label-width="68px"
+      label-width="100px"
     >
       <el-form-item label="菜单名称" prop="name">
         <el-input
           v-model="queryParams.name"
-          class="!w-240px"
+          class="!w-200px"
           clearable
           placeholder="请输入菜单名称"
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="状态" prop="status">
+      <el-form-item label="状态" label-width="68px" prop="status">
         <el-select
           v-model="queryParams.status"
-          class="!w-240px"
+          class="!w-150px"
           clearable
           placeholder="请选择菜单状态"
         >
@@ -33,7 +32,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="!ml-auto">
         <el-button @click="handleQuery">
           <Icon class="mr-5px" icon="ep:search" />
           搜索

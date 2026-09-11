@@ -3,6 +3,7 @@ import * as NotifyMessageApi from '@/api/system/notify/message'
 import { useRouter } from 'vue-router'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { propTypes } from '@/utils/propTypes'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 defineOptions({ name: 'Message' })
 
@@ -13,6 +14,7 @@ defineProps({
 const router = useRouter()
 const userStore = useUserStoreWithOut()
 const unreadCount = ref(0) // 未读消息数量
+const { emitter } = useEmitt()
 let unreadCountTimer: ReturnType<typeof setInterval> | undefined
 
 /** 跳转到待处理页 */
@@ -38,6 +40,8 @@ const getUnreadCount = async () => {
 onMounted(() => {
   // 首次加载小红点
   getUnreadCount()
+  // 监听待处理页操作事件，立即刷新统计
+  emitter.on('pending-stats-updated', getUnreadCount)
   // 轮询刷新小红点
   unreadCountTimer = setInterval(
     () => {
@@ -47,11 +51,12 @@ onMounted(() => {
         unreadCount.value = 0
       }
     },
-    1000 * 60 * 2
+    1000 * 60 * 5
   )
 })
 
 onBeforeUnmount(() => {
+  emitter.off('pending-stats-updated', getUnreadCount)
   if (unreadCountTimer) {
     clearInterval(unreadCountTimer)
     unreadCountTimer = undefined

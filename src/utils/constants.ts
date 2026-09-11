@@ -541,12 +541,13 @@ export const CASE_STATUS_LABEL = {
   draft: '待提交',
   review: '待审核',
   issue: '待签发',
-  issue1: '待签发(建设科复核)',
-  issue2: '待签发(建设科过会)',
+  issue1: '待签发',
+  issue2: '待签发',
   pay: '待缴款',
   close: '待办结',
   archived: '已归档',
-  returned: '退回待修改'
+  returned: '退回待修改',
+  secondReview: '待补录'
 }
 
 export const FLOW_NODE = {
@@ -558,7 +559,8 @@ export const FLOW_NODE = {
   PAY: '缴款',
   CLOSE: '办结',
   ARCHIVE: '归档',
-  RETURN: '退回待修改'
+  RETURN: '退回待修改',
+  SUPPLEMENT: '证号补录'
 }
 
 export const STATUS_TAG = {
@@ -570,7 +572,8 @@ export const STATUS_TAG = {
   pay: 'danger',
   close: 'success',
   archived: 'success',
-  returned: 'danger'
+  returned: 'danger',
+  secondReview: 'warning'
 }
 
 export const FLOW_NODES = [
@@ -600,7 +603,7 @@ export const LAND_USES = [
   '其他'
 ]
 
-export const BIZ_TYPES = ['初次', '变更', '竣备', '历史补缴', '免征']
+export const BIZ_TYPES = ['初次', '变更', '竣备', '免征']
 
 export const PROJECT_SUBTYPES = ['新建', '改扩建', '拆复建', '旧城改造拆建']
 

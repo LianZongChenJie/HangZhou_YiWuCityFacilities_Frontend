@@ -284,11 +284,11 @@ const STATUS_ACTIONS = {
   ],
   ISSUE1: [
     { key: 'issue1Return', actionName: '退回', business: 'business:approval:issue1Return' },
-    { key: 'issueReview', actionName: '建设科复核通过', business: 'business:approval:issue' }
+    { key: 'issueReview', actionName: '建设科复核通过', business: 'business:approval:issue1' }
   ],
   ISSUE2: [
     { key: 'issue2Return', actionName: '退回', business: 'business:approval:issue2Return' },
-    { key: 'issueMeeting', actionName: '建设科过会通过', business: 'business:approval:issue' }
+    { key: 'issueMeeting', actionName: '建设科过会通过', business: 'business:approval:issue2' }
   ],
   PAY: [
     { key: 'issueReturn', actionName: '退回', business: 'business:approval:issueReturn' },

@@ -1,91 +1,100 @@
 <template>
   <ContentWrap>
     <!-- 搜索工作栏 -->
-    <el-form
-      ref="queryFormRef"
-      :inline="true"
-      :model="queryParams"
-      class="-mb-15px"
-      label-width="100px"
-    >
-      <el-form-item label="角色名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          class="!w-240px"
-          clearable
-          placeholder="请输入角色名称"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="角色标识" prop="code">
-        <el-input
-          v-model="queryParams.code"
-          class="!w-240px"
-          clearable
-          placeholder="请输入角色标识"
-          @keyup.enter="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-select v-model="queryParams.status" class="!w-240px" clearable placeholder="请选择状态">
-          <el-option
-            v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-          end-placeholder="结束日期"
-          start-placeholder="开始日期"
-          type="daterange"
-          value-format="YYYY-MM-DD HH:mm:ss"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="handleQuery">
-          <Icon class="mr-5px" icon="ep:search" />
-          搜索
-        </el-button>
-        <el-button @click="resetQuery">
-          <Icon class="mr-5px" icon="ep:refresh" />
-          重置
-        </el-button>
-        <el-button
-          v-hasPermi="['system:role:create']"
-          plain
-          type="primary"
-          @click="openForm('create')"
-        >
-          <Icon class="mr-5px" icon="ep:plus" />
-          新增
-        </el-button>
-        <el-button
-          v-hasPermi="['system:role:export']"
-          :loading="exportLoading"
-          plain
-          type="success"
-          @click="handleExport"
-        >
-          <Icon class="mr-5px" icon="ep:download" />
-          导出
-        </el-button>
-        <el-button
-          v-hasPermi="['system:role:delete']"
-          :disabled="checkedIds.length === 0"
-          plain
-          type="danger"
-          @click="handleDeleteBatch"
-        >
-          <Icon class="mr-5px" icon="ep:delete" />
-          批量删除
-        </el-button>
-      </el-form-item>
+    <el-form ref="queryFormRef" :model="queryParams" class="-mb-15px" label-width="100px">
+      <el-row :gutter="16">
+        <el-col :span="8">
+          <el-form-item label="角色名称" prop="name">
+            <el-input
+              v-model="queryParams.name"
+              clearable
+              placeholder="请输入角色名称"
+              @keyup.enter="handleQuery"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="角色标识" prop="code">
+            <el-input
+              v-model="queryParams.code"
+              clearable
+              placeholder="请输入角色标识"
+              @keyup.enter="handleQuery"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="状态" prop="status">
+            <el-select
+              v-model="queryParams.status"
+              clearable
+              placeholder="请选择状态"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="创建时间" prop="createTime">
+            <el-date-picker
+              v-model="queryParams.createTime"
+              :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
+              end-placeholder="结束日期"
+              start-placeholder="开始日期"
+              type="daterange"
+              value-format="YYYY-MM-DD HH:mm:ss"
+              style="width: 100%"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="16">
+          <el-form-item class="!mb-0" label-width="20px">
+            <el-button @click="handleQuery">
+              <Icon class="mr-5px" icon="ep:search" />
+              搜索
+            </el-button>
+            <el-button @click="resetQuery">
+              <Icon class="mr-5px" icon="ep:refresh" />
+              重置
+            </el-button>
+            <el-button
+              v-hasPermi="['system:role:create']"
+              plain
+              type="primary"
+              @click="openForm('create')"
+            >
+              <Icon class="mr-5px" icon="ep:plus" />
+              新增
+            </el-button>
+            <el-button
+              v-hasPermi="['system:role:export']"
+              :loading="exportLoading"
+              plain
+              type="success"
+              @click="handleExport"
+            >
+              <Icon class="mr-5px" icon="ep:download" />
+              导出
+            </el-button>
+            <el-button
+              v-hasPermi="['system:role:delete']"
+              :disabled="checkedIds.length === 0"
+              plain
+              type="danger"
+              @click="handleDeleteBatch"
+            >
+              <Icon class="mr-5px" icon="ep:delete" />
+              批量删除
+            </el-button>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
   </ContentWrap>
 

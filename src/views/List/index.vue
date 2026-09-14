@@ -5,12 +5,22 @@
         <el-row :gutter="16">
           <el-col :span="8">
             <el-form-item label="项目名称">
-              <el-input v-model="q.projectName" placeholder="模糊" clearable style="width: 100%" />
+              <el-input
+                v-model="q.projectName"
+                placeholder="请输入"
+                clearable
+                style="width: 100%"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item label="建设单位">
-              <el-input v-model="q.builderName" placeholder="模糊" clearable style="width: 100%" />
+              <el-input
+                v-model="q.builderName"
+                placeholder="请输入"
+                clearable
+                style="width: 100%"
+              />
             </el-form-item>
           </el-col>
 
@@ -157,7 +167,7 @@
         <el-table-column label="办结时间" width="110">
           <template #default="{ row }">{{ formatDate(row.closedAt) }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="110" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click="open(row)">详情</el-button>
             <el-button v-if="canHandle(row)" link type="success" @click="open(row, 'handle')"
@@ -239,7 +249,8 @@ function buildParams() {
     timeKind: q.value.timeKind || undefined,
     otherDates:
       q.value.otherDates && q.value.otherDates.length === 2 ? q.value.otherDates : undefined,
-    reduction: Number(q.value.reduction) === 1,
+    reduction:
+      q.value.reduction === 1 || q.value.reduction === 0 ? q.value.reduction === 1 : undefined,
     amount:
       q.value.minAmt !== '' || q.value.maxAmt !== ''
         ? [

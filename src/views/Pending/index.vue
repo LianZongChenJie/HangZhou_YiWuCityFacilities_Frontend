@@ -195,15 +195,15 @@
               style="width: 100%"
             />
           </el-form-item>
-<el-form-item label="实际到账金额" prop="paidAmount" label-width="125px">
-          <el-input-number
-            v-model="actionForm.paidAmount"
-            :min="0"
-            :precision="2"
-            :controls="false"
-            style="width: 100%"
-          />
-        </el-form-item>
+          <el-form-item label="实际到账金额" prop="paidAmount" label-width="125px">
+            <el-input-number
+              v-model="actionForm.paidAmount"
+              :min="0"
+              :precision="2"
+              :controls="false"
+              style="width: 100%"
+            />
+          </el-form-item>
         </template>
 
         <template v-if="actionDialog.type === 'close'">
@@ -481,7 +481,6 @@ const filtered = computed(() => rows.value)
 
 function statusText(row) {
   if (row.status === 'returned') return '退回待修改'
-  if (row.isFourCerts && !row.permitNo) return '待证号补录'
   return CASE_STATUS_LABEL[row.status] || row.status
 }
 

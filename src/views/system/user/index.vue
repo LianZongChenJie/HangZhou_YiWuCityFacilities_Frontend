@@ -1,5 +1,4 @@
 <template>
-
   <el-row :gutter="20">
     <!-- 左侧部门树 -->
     <el-col :span="4" :xs="24">
@@ -10,94 +9,98 @@
     <el-col :span="20" :xs="24">
       <!-- 搜索 -->
       <ContentWrap>
-        <el-form
-          class="-mb-15px"
-          :model="queryParams"
-          ref="queryFormRef"
-          :inline="true"
-          label-width="100px"
-        >
-          <el-form-item label="用户名称" prop="username">
-            <el-input
-              v-model="queryParams.username"
-              placeholder="请输入用户名称"
-              clearable
-              @keyup.enter="handleQuery"
-              class="!w-240px"
-            />
-          </el-form-item>
-          <el-form-item label="手机号码" prop="mobile">
-            <el-input
-              v-model="queryParams.mobile"
-              placeholder="请输入手机号码"
-              clearable
-              @keyup.enter="handleQuery"
-              class="!w-240px"
-            />
-          </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-select
-              v-model="queryParams.status"
-              placeholder="请选择用户状态"
-              clearable
-              class="!w-240px"
-            >
-              <el-option
-                v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="创建时间" prop="createTime">
-            <el-date-picker
-              v-model="queryParams.createTime"
-              value-format="YYYY-MM-DD HH:mm:ss"
-              type="datetimerange"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              class="!w-240px"
-            />
-          </el-form-item>
-          <el-form-item>
-            <el-button @click="handleQuery"><Icon icon="ep:search" />搜索</el-button>
-            <el-button @click="resetQuery"><Icon icon="ep:refresh" />重置</el-button>
-            <el-button
-              type="primary"
-              plain
-              @click="openForm('create')"
-              v-hasPermi="['system:user:create']"
-            >
-              <Icon icon="ep:plus" /> 新增
-            </el-button>
-            <el-button
-              type="warning"
-              plain
-              @click="handleImport"
-              v-hasPermi="['system:user:import']"
-            >
-              <Icon icon="ep:upload" /> 导入
-            </el-button>
-            <el-button
-              type="success"
-              plain
-              @click="handleExport"
-              :loading="exportLoading"
-              v-hasPermi="['system:user:export']"
-            >
-              <Icon icon="ep:download" />导出
-            </el-button>
-            <el-button
-              type="danger"
-              plain
-              :disabled="checkedIds.length === 0"
-              @click="handleDeleteBatch"
-              v-hasPermi="['system:user:delete']"
-            >
-              <Icon icon="ep:delete" />批量删除
-            </el-button>
-          </el-form-item>
+        <el-form class="-mb-15px" :model="queryParams" ref="queryFormRef" label-width="100px">
+          <el-row :gutter="16">
+            <el-col :span="8">
+              <el-form-item label="用户名称" prop="username">
+                <el-input
+                  v-model="queryParams.username"
+                  placeholder="请输入用户名称"
+                  clearable
+                  @keyup.enter="handleQuery"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="手机号码" prop="mobile">
+                <el-input
+                  v-model="queryParams.mobile"
+                  placeholder="请输入手机号码"
+                  clearable
+                  @keyup.enter="handleQuery"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="状态" prop="status">
+                <el-select
+                  v-model="queryParams.status"
+                  placeholder="请选择用户状态"
+                  clearable
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="dict in getIntDictOptions(DICT_TYPE.COMMON_STATUS)"
+                    :key="dict.value"
+                    :label="dict.label"
+                    :value="dict.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="创建时间" prop="createTime">
+                <el-date-picker
+                  v-model="queryParams.createTime"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+                  type="datetimerange"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="16">
+              <el-form-item class="!mb-0" label-width="20px">
+                <el-button @click="handleQuery"><Icon icon="ep:search" />搜索</el-button>
+                <el-button @click="resetQuery"><Icon icon="ep:refresh" />重置</el-button>
+                <el-button
+                  type="primary"
+                  plain
+                  @click="openForm('create')"
+                  v-hasPermi="['system:user:create']"
+                >
+                  <Icon icon="ep:plus" /> 新增
+                </el-button>
+                <el-button
+                  type="warning"
+                  plain
+                  @click="handleImport"
+                  v-hasPermi="['system:user:import']"
+                >
+                  <Icon icon="ep:upload" /> 导入
+                </el-button>
+                <el-button
+                  type="success"
+                  plain
+                  @click="handleExport"
+                  :loading="exportLoading"
+                  v-hasPermi="['system:user:export']"
+                >
+                  <Icon icon="ep:download" />导出
+                </el-button>
+                <el-button
+                  type="danger"
+                  plain
+                  :disabled="checkedIds.length === 0"
+                  @click="handleDeleteBatch"
+                  v-hasPermi="['system:user:delete']"
+                >
+                  <Icon icon="ep:delete" />批量删除
+                </el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </ContentWrap>
       <ContentWrap>

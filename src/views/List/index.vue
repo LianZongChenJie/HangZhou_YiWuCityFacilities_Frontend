@@ -173,7 +173,7 @@
             <el-button v-if="canHandle(row)" link type="success" @click="open(row, 'handle')"
               >办理</el-button
             >
-            <el-button v-if="row.status === 'archived'" link @click="print(row)">打印</el-button>
+            <el-button v-if="row.status === 'archived' && checkPermi(['business:project-application:print'])" link @click="print(row)">打印</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -201,6 +201,7 @@ import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/store/user'
 import { BIZ_TYPES, CASE_STATUS_LABEL, STATUS_TAG } from '@/utils/constants'
 import { formatMoney } from '@/utils/calc'
+import { checkPermi } from '@/utils/permission'
 import { getPageList } from './api'
 import dayjs from 'dayjs'
 

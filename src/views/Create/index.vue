@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted, nextTick } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { CaseForm } from '@/components/CaseForm'
@@ -191,16 +191,8 @@ async function save(submit?: boolean) {
             cancelButtonText: '返回待处理',
             type: 'success'
           })
-          // 等待弹窗关闭动画完成后再执行后续操作
-          await new Promise((resolve) => setTimeout(resolve, 300))
-          Object.assign(form, emptyForm())
-          // 清除校验状态，避免空表单触发必填红框
-          cf.value?.clearValidate?.()
-          await nextTick()
-          // 滚动到顶部
-          window.scrollTo({ top: 0, behavior: 'instant' })
-          document.documentElement.scrollTop = 0
-          document.body.scrollTop = 0
+          // 刷新页面，回到新建办件页
+          window.location.reload()
         } catch {
           router.push('/pending')
         }

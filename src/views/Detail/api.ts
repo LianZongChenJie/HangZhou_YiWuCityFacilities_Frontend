@@ -27,7 +27,9 @@ enum Api {
   /** 建设科复核 */
   issueReview = '/business/approval/issue1-review',
   /** 建设科过会 */
-  issueMeeting = '/business/approval/issue2-meeting'
+  issueMeeting = '/business/approval/issue2-meeting',
+  /** 建设科退回（复核/过会阶段） */
+  constructionReturn = '/business/approval/construction-return'
 }
 
 /** 查看详情 */
@@ -75,3 +77,7 @@ export const issueReview = (data: ApprovalProcessReqVO) =>
 /** 建设科过会 */
 export const issueMeeting = (data: ApprovalProcessReqVO) =>
   request.post<boolean>({ url: Api.issueMeeting, data })
+
+/** 建设科退回（复核/过会阶段） */
+export const constructionReturn = (data: ApprovalRejectReqVO) =>
+  request.post<boolean>({ url: Api.constructionReturn, data })

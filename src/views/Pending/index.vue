@@ -296,6 +296,7 @@ import {
   updateItem,
   approve,
   returnModify,
+  constructionReturn,
   issue as issueApi,
   confirmPaid as confirmPaidApi,
   closeCase as closeApi,
@@ -766,14 +767,12 @@ async function confirmAction() {
     if (type === 'approve') {
       payload.opinion = actionForm.opinion || undefined
       await approve(payload)
-    } else if (
-      type === 'return' ||
-      type === 'issueReturn' ||
-      type === 'issue1Return' ||
-      type === 'issue2Return'
-    ) {
+    } else if (type === 'return' || type === 'issueReturn') {
       payload.opinion = actionForm.opinion
       await returnModify(payload)
+    } else if (type === 'issue1Return' || type === 'issue2Return') {
+      payload.opinion = actionForm.opinion
+      await constructionReturn(payload)
     } else if (type === 'issue') {
       payload.paymentNoticeNo = actionForm.paymentNoticeNo || undefined
       payload.opinion = actionForm.opinion || undefined

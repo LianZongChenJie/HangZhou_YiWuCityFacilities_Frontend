@@ -533,6 +533,7 @@ export const STATUS_LABEL = {
   CONFIRM_PAID: '已确认到账',
   SUPPLEMENT: '已补录',
   CLOSE: '已办结',
+  CONSTRUCTION_RETURN: '建设科退回',
   ARCHIVE: '已归档'
 }
 
@@ -560,7 +561,8 @@ export const FLOW_NODE = {
   CLOSE: '办结',
   ARCHIVE: '归档',
   RETURN: '退回待修改',
-  SUPPLEMENT: '证号补录'
+  SUPPLEMENT: '证号补录',
+  CONSTRUCTION_RETURN: '建设科'
 }
 
 export const STATUS_TAG = {

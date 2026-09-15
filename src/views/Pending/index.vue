@@ -368,7 +368,7 @@ const data = [
     business: 'business:pending:issue1',
     actions: [
       { key: 'issue1Return', actionName: '退回', business: 'business:approval:issue1Return' },
-      { key: 'issueReview', actionName: '复核通过', business: 'business:approval:issue' }
+      { key: 'issueReview', actionName: '复核通过', business: 'business:approval:issue1' }
     ]
   },
   {
@@ -377,7 +377,7 @@ const data = [
     business: 'business:pending:issue2',
     actions: [
       { key: 'issue2Return', actionName: '退回', business: 'business:approval:issue2Return' },
-      { key: 'issueMeeting', actionName: '过会通过', business: 'business:approval:issue' }
+      { key: 'issueMeeting', actionName: '过会通过', business: 'business:approval:issue2' }
     ]
   },
   {

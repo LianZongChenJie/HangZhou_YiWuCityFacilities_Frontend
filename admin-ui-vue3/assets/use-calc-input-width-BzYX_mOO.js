@@ -1,0 +1,1 @@
+import{g as e,vn as t,xn as n}from"./runtime-core.esm-bundler-HdWbvI6s.js";import{h as r}from"./event-DnhVRuQv.js";function i(){let i=n(),a=t(0),o=e(()=>({minWidth:`${Math.max(a.value,11)}px`}));return r(i,()=>{a.value=i.value?.getBoundingClientRect().width??0}),{calculatorRef:i,calculatorWidth:a,inputStyle:o}}export{i as t};

@@ -1,3 +1,12 @@
+# 压缩文件
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.tgz
+*.bz2
+
 node_modules
 .DS_Store
 dist

@@ -1,1 +1,0 @@
-import{k as e}from"./en-CZlig1P5.js";import{t}from"./dayjs.min-DSGzZAy1.js";var n=e(t());function r(e,t){return e&&e?(0,n.default)(e).format(t??`YYYY-MM-DD HH:mm:ss`):``}function i(e,t,n){return n?r(n):``}export{r as n,i as t};

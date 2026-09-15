@@ -1,1 +1,0 @@
-import{B as e}from"./runtime-core.esm-bundler-HdWbvI6s.js";import{t}from"./Icon-BSbRvHN3.js";import"./index-DmAecpNq.js";var n=n=>e(t,n);export{n as t};

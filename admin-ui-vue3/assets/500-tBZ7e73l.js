@@ -1,1 +1,0 @@
-import{On as e,k as t,mt as n,v as r}from"./runtime-core.esm-bundler-HdWbvI6s.js";import{_ as i}from"./useApi-DtucMc-S-CiIIgBYE.js";import{t as a}from"./Error-PLQhZmSF.js";var o=t({name:`Error500`,__name:`500`,setup(t){let{push:o}=i();return(t,i)=>{let s=a;return n(),r(s,{type:`500`,onErrorClick:i[0]||=t=>e(o)(`/`)})}}});export{o as default};

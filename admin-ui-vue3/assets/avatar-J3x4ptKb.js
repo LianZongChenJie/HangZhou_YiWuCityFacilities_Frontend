@@ -1,1 +1,0 @@
-var e=`/admin-ui-vue3/assets/avatar-Dcbh69co.gif`;export{e as t};

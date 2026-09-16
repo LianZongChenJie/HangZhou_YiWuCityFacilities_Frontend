@@ -421,8 +421,8 @@ onMounted(() => {
   margin-top: 16px;
 }
 
-/* 操作列按钮：统一左对齐、右侧留 4px 间距，!important 提高权重覆盖 element-plus 默认 */
-:deep(.list-action-btn.is-link) {
+/* 操作列按钮：仅列表表格内的按钮生效，!important 覆盖 element-plus 默认 */
+:deep(.table-card) .list-action-btn.is-link {
   margin-left: 0 !important;
   margin-right: 4px !important;
 }

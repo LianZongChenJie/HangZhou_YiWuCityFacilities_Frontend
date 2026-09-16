@@ -98,7 +98,7 @@
           :formatter="(_, __, val) => formatMoney(val)"
         />
         <el-table-column prop="acceptTime" label="受理时间" width="110" />
-        <el-table-column prop="closeDate" label="办结时间" width="110" />
+        <el-table-column prop="closedAt" label="办结时间" width="110" />
         <el-table-column prop="issueDate" label="开票时间" width="110" />
         <el-table-column prop="payDate" label="到账时间" width="120" />
         <el-table-column label="办件状态" width="110">

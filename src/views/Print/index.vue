@@ -179,16 +179,16 @@
               <td>{{ formatDate(row.closedAt || row.closeDate) }}</td>
             </tr>
             <tr>
-              <th>费用收讫</th>
-              <td>{{ formatDate(row.paymentReceivedDate) }}</td>
               <th>开具缴款通知书</th>
               <td>{{ formatDate(row.paymentNoticeIssuedAt) }}</td>
+              <th>费用收讫</th>
+              <td>{{ formatDate(row.paymentReceivedDate) }}</td>
             </tr>
             <tr>
               <th>缴费表领取人（签字）</th>
-              <td>{{ row.receiverName || '　　　　' }}</td>
+              <td>{{ '　　　　' }}</td>
               <th>领取时间</th>
-              <td>{{ row.receiveTime || '　　　　' }}</td>
+              <td>{{ '　　　　' }}</td>
             </tr>
           </tbody>
         </table>

@@ -127,12 +127,6 @@
           </el-form-item>
         </template>
 
-        <template v-if="actionDialog.type === 'close'">
-          <el-form-item label="领取人" prop="receiptSigner">
-            <el-input v-model="actionForm.receiptSigner" placeholder="请输入领取人姓名" />
-          </el-form-item>
-        </template>
-
         <template v-if="actionDialog.type === 'supplement'">
           <el-form-item label="工规证号" prop="permitNo">
             <el-input v-model="actionForm.permitNo" placeholder="请输入工程规划许可证号" />
@@ -581,7 +575,6 @@ const actionForm = reactive({
   payDate: '',
   paidAmount: null,
   paymentNoticeNo: '',
-  receiptSigner: '',
   permitNo: '',
   issueDate: ''
 })
@@ -594,9 +587,6 @@ const actionRules = computed(() => {
   if (actionDialog.type === 'confirmPaid') {
     rules.payDate = [{ required: true, message: '请选择到账日期', trigger: 'change' }]
     rules.paidAmount = [{ required: true, message: '请输入实际到账金额', trigger: 'blur' }]
-  }
-  if (actionDialog.type === 'close') {
-    rules.receiptSigner = [{ required: true, message: '请输入领取人姓名', trigger: 'blur' }]
   }
   if (actionDialog.type === 'supplement') {
     rules.permitNo = [{ required: true, message: '请输入工规证号', trigger: 'blur' }]
@@ -612,7 +602,6 @@ function resetActionForm() {
   actionForm.payDate = todayText()
   actionForm.paidAmount = null
   actionForm.paymentNoticeNo = ''
-  actionForm.receiptSigner = ''
   actionForm.permitNo = ''
   actionForm.issueDate = todayText()
 }
@@ -677,7 +666,6 @@ async function confirmAction() {
       payload.opinion = actionForm.opinion || undefined
       await confirmPaidApi(payload)
     } else if (type === 'close') {
-      payload.receiptSigner = actionForm.receiptSigner
       payload.opinion = actionForm.opinion || undefined
       await closeApi(payload)
     } else if (type === 'supplement') {

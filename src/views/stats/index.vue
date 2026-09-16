@@ -18,7 +18,12 @@
           <el-col :span="10">
             <el-form-item label="办结/开票/到账" label-width="150px">
               <div style="display: flex; align-items: center; width: 100%">
-                <el-select v-model="q.timeKind" style="width: 110px; margin-right: 8px">
+                <el-select
+                  v-model="q.timeKind"
+                  clearable
+                  placeholder="请选择"
+                  style="width: 110px; margin-right: 8px"
+                >
                   <el-option label="办结时间" value="closeDate" />
                   <el-option label="开票时间" value="issueDate" />
                   <el-option label="到账时间" value="payDate" />
@@ -92,8 +97,17 @@
           align="right"
           :formatter="(_, __, val) => formatMoney(val)"
         />
-        <el-table-column prop="issueDate" label="签发日期" width="110" />
-        <el-table-column prop="payDate" label="缴费到账日期" width="120" />
+        <el-table-column prop="acceptTime" label="受理时间" width="110" />
+        <el-table-column prop="closeDate" label="办结时间" width="110" />
+        <el-table-column prop="issueDate" label="开票时间" width="110" />
+        <el-table-column prop="payDate" label="到账时间" width="120" />
+        <el-table-column label="办件状态" width="110">
+          <template #default="{ row }">
+            <el-tag :type="STATUS_TAG[row.status] || 'info'" size="small">{{
+              CASE_STATUS_LABEL[row.status] || row.status || '—'
+            }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="contact" label="联系人" width="90" />
         <el-table-column prop="phone" label="联系电话" width="120" />
       </el-table>
@@ -117,7 +131,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { CASE_STATUS_LABEL } from '@/utils/constants'
+import { CASE_STATUS_LABEL, STATUS_TAG } from '@/utils/constants'
 import { formatMoney } from '@/utils/calc'
 import download from '@/utils/download'
 import { getList, getSummary, exportList } from './api'
@@ -143,7 +157,7 @@ const q = reactive({
   pageNo: 1,
   pageSize: 10,
   acceptDates: defaultMonthRange() as string[],
-  timeKind: 'closeDate',
+  timeKind: '',
   otherDates: [] as string[],
   minAmt: '',
   maxAmt: '',
@@ -207,7 +221,7 @@ function reset() {
   q.pageNo = 1
   q.pageSize = 10
   q.acceptDates = defaultMonthRange()
-  q.timeKind = 'closeDate'
+  q.timeKind = ''
   q.otherDates = []
   q.minAmt = ''
   q.maxAmt = ''
@@ -229,7 +243,7 @@ function onSizeChange(size: number) {
 async function exportXls() {
   exportLoading.value = true
   try {
-    const data = await exportList(buildParams())
+    const data = (await exportList(buildParams())) as unknown as Blob
     download.excel(data, '配套费办件清单.xlsx')
   } catch (e: any) {
     ElMessage.error(e?.message || '导出失败，请稍后重试')

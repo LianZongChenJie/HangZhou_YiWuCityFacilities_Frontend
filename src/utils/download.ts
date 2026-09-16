@@ -13,9 +13,13 @@ const download0 = (data: Blob, fileName: string, mineType: string) => {
 }
 
 const download = {
-  // 下载 Excel 方法
+  // 下载 Excel 方法（兼容 .xls 和 .xlsx）
   excel: (data: Blob, fileName: string) => {
-    download0(data, fileName, 'application/vnd.ms-excel')
+    const isXlsx = fileName.endsWith('.xlsx')
+    const mimeType = isXlsx
+      ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      : 'application/vnd.ms-excel'
+    download0(data, fileName, mimeType)
   },
   // 下载 Word 方法
   word: (data: Blob, fileName: string) => {

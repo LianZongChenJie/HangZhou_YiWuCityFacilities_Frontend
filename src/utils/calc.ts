@@ -22,11 +22,15 @@ export function calcFee(form) {
   // 应收金额不应出现负数（面积未输入或免征金额大于计算金额时）
   const autoReceivable = round2(Math.max(rawReceivable, 0))
 
-  // 拆复建：实际应收金额 = max(当前应收 - 原有项目应收, 0)
+  // 拆复建/竣备：实际应收金额 = 当前应收 - 原有项目应收
+  // 拆复建：最小为 0；竣备：可以为负数
   const isRebuild = form.projectSubtype === '拆复建'
-  const archivedReceivable = isRebuild ? Number(form.archivedReceivable) || 0 : 0
-  const actualReceivable = isRebuild
-    ? round2(Math.max(autoReceivable - archivedReceivable, 0))
+  const isCompletion = form.bizType === '竣备'
+  const hasArchivedAssociation = isRebuild || isCompletion
+  const archivedReceivable = hasArchivedAssociation ? Number(form.archivedReceivable) || 0 : 0
+  const diffAmount = round2(autoReceivable - archivedReceivable)
+  const actualReceivable = hasArchivedAssociation
+    ? isCompletion ? diffAmount : Math.max(diffAmount, 0)
     : autoReceivable
 
   return {
@@ -34,7 +38,7 @@ export function calcFee(form) {
     residentialArea,
     nonResidentialArea,
     autoReceivable,
-    archivedReceivable: isRebuild ? archivedReceivable : 0,
+    archivedReceivable: hasArchivedAssociation ? archivedReceivable : 0,
     actualReceivable,
     receivable: form.amountManual ? Number(form.receivable) || 0 : actualReceivable
   }
@@ -80,6 +84,8 @@ export function emptyForm() {
     archivedCivilAirArea: 0,
     archivedReceivable: 0,
     actualReceivable: 0,
+    refundBank: '',
+    refundAccount: '',
     acceptOpinion: '',
     reviewOpinion: '',
     issueOpinion: '',

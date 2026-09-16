@@ -19,4 +19,10 @@ export const getSummary = (data: Request) =>
   request.post<ReportSummaryVO>({ url: Api.summary, data })
 
 /** 导出 Excel */
-export const exportList = (data: Request) => request.post({ url: Api.export, data })
+export const exportList = (data: Request) =>
+  request.postOriginal({
+    url: Api.export,
+    data,
+    responseType: 'blob',
+    headersType: 'application/json'
+  })

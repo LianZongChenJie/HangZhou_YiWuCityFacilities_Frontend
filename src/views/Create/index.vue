@@ -69,7 +69,10 @@ function buildPayload(): Request {
     nonResidentialArea: form.nonResidentialArea || undefined,
     archivedResidentialArea: form.archivedResidentialArea || undefined,
     archivedReceivable: form.archivedReceivable || undefined,
-    actualReceivable: form.actualReceivable || undefined
+    actualReceivable: form.actualReceivable || undefined,
+    refundBank: form.refundBank || undefined,
+    refundAccount: form.refundAccount || undefined,
+    finalPayable: form.actualReceivable ?? undefined
   }
 }
 
@@ -132,6 +135,9 @@ async function loadDetail() {
     form.archivedCivilAirArea = r.archivedCivilAirArea || 0
     form.archivedReceivable = r.archivedReceivable || 0
     form.actualReceivable = r.actualReceivable || 0
+    // 竣备退款信息
+    form.refundBank = r.refundBank || ''
+    form.refundAccount = r.refundAccount || ''
     // 触发计算
     applyCalc(form)
   } catch (e: any) {

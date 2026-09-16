@@ -194,7 +194,6 @@ async function fetchData() {
     rows.value = pageRes?.list || []
     total.value = pageRes?.total || 0
 
-    console.log('pageRes', pageRes)
     // 映射汇总数据
     const s = summaryRes || {}
     summary.value = [

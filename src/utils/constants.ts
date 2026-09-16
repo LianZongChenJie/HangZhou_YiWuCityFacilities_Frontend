@@ -534,7 +534,8 @@ export const STATUS_LABEL = {
   SUPPLEMENT: '已补录',
   CLOSE: '已办结',
   CONSTRUCTION_RETURN: '建设科退回',
-  ARCHIVE: '已归档'
+  ARCHIVE: '已归档',
+  INVALID: '已作废'
 }
 
 /** 办件业务状态 → 中文标签（列表/统计/待办等业务页面使用） */
@@ -548,7 +549,8 @@ export const CASE_STATUS_LABEL = {
   close: '待办结',
   archived: '已归档',
   returned: '退回待修改',
-  secondReview: '待补录'
+  secondReview: '待补录',
+  invalid: '作废'
 }
 
 export const FLOW_NODE = {
@@ -562,7 +564,8 @@ export const FLOW_NODE = {
   ARCHIVE: '归档',
   RETURN: '退回待修改',
   SUPPLEMENT: '证号补录',
-  CONSTRUCTION_RETURN: '建设科'
+  CONSTRUCTION_RETURN: '建设科',
+  INVALID: '作废'
 }
 
 export const STATUS_TAG = {
@@ -575,7 +578,8 @@ export const STATUS_TAG = {
   close: 'success',
   archived: 'success',
   returned: 'danger',
-  secondReview: 'warning'
+  secondReview: 'warning',
+  invalid: 'info'
 }
 
 export const FLOW_NODES = [

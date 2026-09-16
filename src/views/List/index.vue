@@ -167,13 +167,26 @@
         <el-table-column label="办结时间" width="110">
           <template #default="{ row }">{{ formatDate(row.closedAt) }}</template>
         </el-table-column>
-        <el-table-column label="操作" width="110" fixed="right">
+        <el-table-column label="操作" width="140" fixed="right">
           <template #default="{ row }">
-            <el-button link type="primary" @click="open(row)">详情</el-button>
-            <el-button v-if="canHandle(row)" link type="success" @click="open(row, 'handle')"
-              >办理</el-button
+            <el-button class="list-action-btn" link type="primary" @click="open(row)">详情</el-button>
+
+            <el-button
+              v-if="checkPermi(['business:project-application:invalid'])"
+              class="list-action-btn"
+              link
+              type="danger"
+              :disabled="row.status === 'invalid'"
+              @click="handleInvalid(row)"
+              >作废</el-button
             >
-            <el-button v-if="row.status === 'archived' && checkPermi(['business:project-application:print'])" link @click="print(row)">打印</el-button>
+            <el-button
+              v-if="row.status === 'archived' && checkPermi(['business:project-application:print'])"
+              class="list-action-btn"
+              link
+              @click="print(row)"
+              >打印</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -197,12 +210,12 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '@/store/user'
 import { BIZ_TYPES, CASE_STATUS_LABEL, STATUS_TAG } from '@/utils/constants'
 import { formatMoney } from '@/utils/calc'
 import { checkPermi } from '@/utils/permission'
-import { getPageList } from './api'
+import { getPageList, invalidApplication } from './api'
 import dayjs from 'dayjs'
 
 /** 日期格式化：YYYY-MM-DD */
@@ -310,6 +323,29 @@ function open(row, mode) {
 function print(row) {
   window.open(`/print?id=${row.id}`, '_blank')
 }
+async function handleInvalid(row) {
+  let opinion = ''
+  try {
+    const { value } = await ElMessageBox.prompt('确认作废该办件？请填写作废备注', '作废确认', {
+      confirmButtonText: '确认作废',
+      cancelButtonText: '取消',
+      inputPlaceholder: '请输入作废备注',
+      inputType: 'textarea',
+      type: 'warning',
+      customClass: 'invalid-confirm-popup'
+    })
+    opinion = value || ''
+  } catch {
+    return
+  }
+  try {
+    await invalidApplication({ applicationId: row.id, opinion })
+    ElMessage.success('作废成功')
+    onSearch()
+  } catch (e) {
+    ElMessage.error(e?.message || '作废失败')
+  }
+}
 function canHandle(row) {
   const role = user.role
   if (role === 'accept') {
@@ -384,4 +420,17 @@ onMounted(() => {
   justify-content: flex-end;
   margin-top: 16px;
 }
+
+/* 操作列按钮：统一左对齐、右侧留 4px 间距，!important 提高权重覆盖 element-plus 默认 */
+:deep(.list-action-btn.is-link) {
+  margin-left: 0 !important;
+  margin-right: 4px !important;
+}
+
+/* 作废确认弹窗的按钮间距 */
+:deep(.invalid-confirm-popup) .el-message-box__btns .el-button {
+  margin-left: 8px !important;
+  margin-right: 8px !important;
+}
 </style>
+

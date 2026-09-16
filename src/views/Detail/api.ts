@@ -6,6 +6,8 @@ import type { ApprovalRecordRespVO, ApprovalProcessReqVO, ApprovalRejectReqVO } 
 enum Api {
   /** 查看详情 */
   get = '/business/project-application/get',
+  /** 查询归档（已办结）项目列表 */
+  archivedList = '/business/project-application/archived-list',
   /** 修改（提交审核 / 草稿编辑保存） */
   update = '/business/project-application/update',
   /** 审批流 */
@@ -35,6 +37,10 @@ enum Api {
 /** 查看详情 */
 export const getDetail = (id: number) =>
   request.post<ProjectApplicationRespVO>({ url: Api.get, data: { id } })
+
+/** 查询归档（已办结）项目列表 */
+export const getArchivedList = (data: { keyword: string }) =>
+  request.post<any>({ url: Api.archivedList, data })
 
 /** 修改 / 提交审核（入参与新建一致，多了 id 字段） */
 export const updateItem = (data: UpdateRequest) => request.post<boolean>({ url: Api.update, data })

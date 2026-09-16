@@ -120,7 +120,6 @@
           <el-form-item label="实际到账金额" prop="paidAmount" label-width="125px">
             <el-input-number
               v-model="actionForm.paidAmount"
-              :min="0"
               :precision="2"
               :controls="false"
               style="width: 100%"
@@ -218,6 +217,7 @@ import { checkPermi } from '@/utils/permission'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import {
   getDetail,
+  getArchivedList,
   getApprovalRecords,
   updateItem,
   approve,
@@ -371,12 +371,37 @@ async function loadDetail() {
     form.actualReceivable = r.actualReceivable || 0
     // 触发配套费计算
     applyCalc(form)
+    // 拆复建/竣备项目：详情接口不返回原有项目完整核算信息，
+    // 需通过归档列表接口回填原有项目面积、应收金额等字段
+    loadArchivedInfo()
     // 加载审批记录（仅进入正常审批流程后）
     loadApprovalRecords(id)
   } catch (e) {
     ElMessage.error(e?.message || '获取详情失败')
   } finally {
     loading.value = false
+  }
+}
+
+/** 加载原有项目信息（拆复建/竣备项目） */
+async function loadArchivedInfo() {
+  // 仅拆复建/竣备项目，且已有关联工规证号时才需要查询
+  const isArchivedAssociation = form.projectSubtype === '拆复建' || form.bizType === '竣备'
+  if (!isArchivedAssociation || !form.relatedPermitNo) return
+  try {
+    const res = await getArchivedList({ keyword: '' })
+    const list = Array.isArray(res) ? res : res?.list || res?.data || []
+    const item = list.find((i) => i.permitNo === form.relatedPermitNo)
+    if (item) {
+      form.relatedProjectName = item.projectName || ''
+      form.archivedResidentialArea = Number(item.residentialArea) || 0
+      form.archivedNonResidentialArea = Number(item.nonResidentialArea) || 0
+      form.archivedCivilAirArea = Number(item.civilAirArea) || 0
+      form.archivedReceivable = Number(item.receivable) || 0
+      applyCalc(form)
+    }
+  } catch {
+    // 查询失败时保持详情接口返回的默认值
   }
 }
 

@@ -72,7 +72,7 @@ function buildPayload(): Request {
     actualReceivable: form.actualReceivable || undefined,
     refundBank: form.refundBank || undefined,
     refundAccount: form.refundAccount || undefined,
-    finalPayable: form.actualReceivable ?? undefined
+    finalPayable: form.actualReceivable || undefined
   }
 }
 

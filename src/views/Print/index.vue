@@ -51,13 +51,20 @@
               <th>审核意见</th>
               <td>{{ row.reviewOpinion || '—' }}</td>
               <th>审核时间</th>
-              <td>{{ formatDate(row.reviewDate) }}</td>
+              <td>{{ formatDate(row.reviewTime) }}</td>
             </tr>
             <tr>
               <th>签发意见</th>
               <td>{{ row.issueOpinion || '—' }}</td>
               <th>签发时间</th>
               <td>{{ formatDate(row.paymentNoticeIssuedAt) }}</td>
+            </tr>
+
+            <tr>
+              <th>到账意见</th>
+              <td>{{ row.payOpinion || '—' }}</td>
+              <th>到账时间</th>
+              <td>{{ formatDate(row.paymentReceivedDate) }}</td>
             </tr>
             <tr>
               <th>办结意见</th>
@@ -157,7 +164,7 @@
               <th>审核意见</th>
               <td>{{ row.reviewOpinion || '—' }}</td>
               <th>审核时间</th>
-              <td>{{ formatDate(row.reviewDate) }}</td>
+              <td>{{ formatDate(row.reviewTime) }}</td>
             </tr>
             <tr>
               <th>签发意见</th>

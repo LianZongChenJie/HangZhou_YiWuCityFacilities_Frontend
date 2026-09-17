@@ -48,7 +48,7 @@
                 <el-timeline-item
                   v-for="(record, index) in approvalRecords"
                   :key="record.id || index"
-                  :timestamp="dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss')"
+                  :timestamp="record.createTime ? dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') : '--'"
                   placement="top"
                   :type="'success'"
                 >
@@ -133,8 +133,8 @@
           </el-form-item>
         </template>
 
-        <!-- 签发日期：签发时显示 -->
-        <template v-if="actionDialog.type === 'issue'">
+        <!-- 签发日期：签发 / 复核 / 过会时显示 -->
+        <template v-if="actionDialog.type === 'issue' || actionDialog.type === 'issueReview' || actionDialog.type === 'issueMeeting'">
           <el-form-item label="签发日期" prop="issueDate">
             <el-date-picker
               v-model="actionForm.issueDate"
@@ -591,7 +591,11 @@ const actionRules = computed(() => {
   if (actionDialog.type === 'supplement') {
     rules.permitNo = [{ required: true, message: '请输入工规证号', trigger: 'blur' }]
   }
-  if (actionDialog.type === 'issue') {
+  if (
+    actionDialog.type === 'issue' ||
+    actionDialog.type === 'issueReview' ||
+    actionDialog.type === 'issueMeeting'
+  ) {
     rules.issueDate = [{ required: true, message: '请选择签发日期', trigger: 'change' }]
   }
   return rules
@@ -656,9 +660,11 @@ async function confirmAction() {
       await issueApi(payload)
     } else if (type === 'issueReview') {
       payload.opinion = actionForm.opinion || undefined
+      payload.issueDate = actionForm.issueDate || undefined
       await issueReview(payload)
     } else if (type === 'issueMeeting') {
       payload.opinion = actionForm.opinion || undefined
+      payload.issueDate = actionForm.issueDate || undefined
       await issueMeeting(payload)
     } else if (type === 'confirmPaid') {
       payload.paidAmount = actionForm.paidAmount

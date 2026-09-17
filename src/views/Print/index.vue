@@ -144,15 +144,15 @@
             </tr>
             <tr>
               <th>住宅面积</th>
-              <td>{{ row.residentialArea }} ㎡</td>
+              <td>{{ row.residentialArea || 0 }} ㎡</td>
               <th>非住宅面积</th>
-              <td>{{ row.nonResidentialArea }} ㎡</td>
+              <td>{{ row.nonResidentialArea || 0 }} ㎡</td>
             </tr>
             <tr>
               <th>人防面积</th>
               <td>{{ row.civilAirArea || 0 }} ㎡</td>
               <th>缴费金额</th>
-              <td>{{ formatMoney(row.receivable) }} 元</td>
+              <td>{{ formatMoney(row.receivable) || 0 }} 元</td>
             </tr>
             <tr>
               <th>受理意见</th>
@@ -273,12 +273,12 @@ function numberToChinese(num) {
 // 根据 finalPayable 判断是补缴还是退款
 const isRefund = computed(() => {
   if (!row.value) return false
-  return Number(row.value.finalPayable) < 0
+  return Number(row.value.finalPayable || 0) < 0
 })
 
 const displayAmount = computed(() => {
   if (!row.value) return 0
-  return Math.abs(Number(row.value.finalPayable))
+  return Math.abs(Number(row.value.finalPayable) || 0)
 })
 
 const amountChinese = computed(() => {

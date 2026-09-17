@@ -35,6 +35,23 @@ let isRefreshToken = false
 // 请求白名单，无须 token 的接口
 const whiteList: string[] = ['/login', '/refresh-token']
 
+/**
+ * 递归移除对象中值为 undefined 的字段，保留 0、false、'' 等合法值。
+ * 用于请求前统一清理 payload，避免后端收到 undefined（JSON 序列化为 null）。
+ */
+function stripUndefined(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => stripUndefined(item)).filter((item) => item !== undefined)
+  } else if (obj !== null && typeof obj === 'object') {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([, v]) => v !== undefined)
+        .map(([k, v]) => [k, stripUndefined(v)])
+    )
+  }
+  return obj
+}
+
 // 创建axios实例
 const service: AxiosInstance = axios.create({
   baseURL: base_url, // api 的 base_url
@@ -80,6 +97,9 @@ service.interceptors.request.use(
         if (config.data && typeof config.data !== 'string') {
           config.data = qs.stringify(config.data)
         }
+      } else {
+        // 请求体统一剥离 undefined 字段；保留 0、false、'' 等合法值
+        config.data = stripUndefined(config.data)
       }
     }
     // 是否 API 加密

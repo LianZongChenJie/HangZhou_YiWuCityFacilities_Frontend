@@ -63,16 +63,16 @@ function buildPayload(): Request {
     materialsFeeForm: form.materials?.feeForm,
     materialsPermitCopy: form.materials?.permitCopy,
     materialsCivilAirForm: form.materials?.civilAirForm,
-    relatedPermitNo: form.relatedPermitNo || undefined,
-    relatedProjectName: form.relatedProjectName || undefined,
-    residentialArea: form.residentialArea || undefined,
-    nonResidentialArea: form.nonResidentialArea || undefined,
-    archivedResidentialArea: form.archivedResidentialArea || undefined,
-    archivedReceivable: form.archivedReceivable || undefined,
-    actualReceivable: form.actualReceivable || undefined,
-    refundBank: form.refundBank || undefined,
-    refundAccount: form.refundAccount || undefined,
-    finalPayable: form.actualReceivable || undefined
+    relatedPermitNo: form.relatedPermitNo ?? undefined,
+    relatedProjectName: form.relatedProjectName ?? undefined,
+    residentialArea: form.residentialArea ?? undefined,
+    nonResidentialArea: form.nonResidentialArea ?? undefined,
+    archivedResidentialArea: form.archivedResidentialArea ?? undefined,
+    archivedReceivable: form.archivedReceivable ?? undefined,
+    actualReceivable: form.actualReceivable ?? undefined,
+    refundBank: form.refundBank ?? undefined,
+    refundAccount: form.refundAccount ?? undefined,
+    finalPayable: form.actualReceivable ?? undefined
   }
 }
 
@@ -176,15 +176,14 @@ async function save(submit?: boolean) {
       // 修改模式：保存草稿 / 提交审批，都调用 update 接口，入参带 id
       const updatePayload = { ...payload, id: Number(route.query.id) }
       await updateApi(updatePayload)
-      await submitApi({ applicationId: Number(route.query.id) })
       if (submit) {
-        // 提交审批成功
+        // 提交审批前，已调 updateApi 持久化修改
+        await submitApi({ applicationId: Number(route.query.id) })
         ElMessage.success('提交审批成功')
         router.push('/pending')
       } else {
-        // 保存草稿成功
+        // 保存草稿成功：不触发审批流，停留在编辑页
         ElMessage.success('草稿已保存')
-        router.push('/pending')
       }
     } else {
       // 新建模式
